@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace名称空间-->
+<mapper namespace="tech.aaaaaa.mapper.CaptchaMapper">
+    <insert id="insertsendemail">
+        insert into captcha (email, captcha, sendtime)
+        values (#{email},#{captcha},now());
+    </insert>
+    <update id="updatesendemail">
+        update captcha
+        set captcha = #{captcha},sendtime=now()
+        where email=#{email};
+    </update>
+    <update id="updateuid">
+        update captcha
+        set uid = #{uid}
+        where email=#{email};
+    </update>
+    <select id="checksendtime" resultType="java.lang.Integer">
+        select TIMESTAMPDIFF(SECOND,(select sendtime from captcha where email=#{email}),now());
+    </select>
+    <select id="getcaptcha" resultType="java.lang.String">
+        select captcha
+        from captcha where email=#{email};
+    </select>
+</mapper>

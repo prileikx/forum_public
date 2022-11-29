@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace名称空间-->
+<mapper namespace="tech.aaaaaa.mapper.UserMapper">
+    <insert id="adduser">
+        insert into user (username, upassword, email, registertime)
+        values (#{username}, #{upassword}, #{email}, now());
+    </insert>
+    <update id="addloginverify">
+        update user
+        set verify = #{verify}
+        where uid=#{uid};
+    </update>
+    <select id="checkUserEmailIfWasRegister" resultType="java.lang.Integer">
+        select count(*)
+        from user
+        where email = #{email};
+    </select>
+    <select id="checkusernameifcanbeuse" resultType="java.lang.Integer">
+        select count(*)
+        from user
+        where username = #{username};
+    </select>
+    <select id="checkemailifwasregister" resultType="java.lang.Integer">
+        select count(*)
+        from user
+        where email = #{email};
+    </select>
+    <select id="login" resultType="java.lang.Integer">
+        select uid
+        from user
+        where username = #{username} and upassword = #{upassword};
+    </select>
+
+</mapper>

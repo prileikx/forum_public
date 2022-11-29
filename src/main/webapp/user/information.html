@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <script src='../js/userinformation.js'></script>
+    <script src="../js/vue.global.js"></script>
+    <script src="../js/axios.min.js"></script>
+    <script src="../js/element-plus.full.js"></script>
+    <link rel="stylesheet" href="../css/element.css">
+    <link rel="stylesheet" href="../css/information.css">
+    <title>用户信息</title>
+</head>
+<body>
+<div style="width: 980px;margin: 0 auto">
+    <el-row>
+        <el-col :span="24">
+            <div class="grid-content" />
+            <table id="userinformation">
+                <tr>
+                    <td>
+                        uid:{{user.uid}}
+                    </td>
+                    <td>
+                        邮箱状态:{{user.ifconfirmemail}}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        用户名:{{user.username}}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        简介:{{user.describes}}
+                    </td>
+                </tr>
+                <!--        <tr>-->
+                <!--            <td>-->
+                <!--                用户组:{{user.}}-->
+                <!--            </td>-->
+                <!--        </tr>-->
+                <!--        <tr>-->
+                <!--            <td>-->
+                <!--                发帖数:{{user.}}-->
+                <!--            </td>-->
+                <!--        </tr>-->
+                <!--        <tr>-->
+                <!--            <td>-->
+                <!--                回复数:{{user.}}-->
+                <!--            </td>-->
+                <!--        </tr>-->
+                <tr>
+                    <td>
+                        注册时间:{{user.registertime}}
+                    </td>
+                </tr>
+            </table>
+        </el-col>
+    </el-row>
+
+</div>
+
+<script>
+    const {createApp} = Vue
+    createApp({
+        data() {
+            return {
+                message: 'Hello Vue!',
+                user: []
+            }
+        },
+        mounted() {
+            var _this = this;
+            axios({
+                method: "post",
+                url: "/userinformationServlet"
+            }).then(function (resp) {
+                _this.user = resp.data
+                if (_this.user.ifconfirmemail == 1) {
+                    _this.user.ifconfirmemail = "已验证"
+                } else {
+                    _this.user.ifconfirmemail = "未验证"
+                }
+            })
+        }
+    }).mount('#userinformation')
+</script>
+</body>
+</html>

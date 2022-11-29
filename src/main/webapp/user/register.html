@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <script src="../js/vue.global.js"></script>
+    <script src="../js/axios.min.js"></script>
+    <script src="../js/jquery-3.0.0.js"></script>
+    <script src="../js/sweetalert2.all.min.js"></script>
+    <script src="../js/sha1.min.js"></script>
+    <link rel="stylesheet" href="../css/picnic.css">
+    <style>
+        label{
+            width: 300px;
+        }
+        input{
+            width: 300px;
+        }
+        td{
+            text-align: center;
+            background: #fff;
+        }
+    </style>
+    <title>注册</title>
+</head>
+<body style="width: 100%">
+<div class="flex center one demo">
+    <div style="width: 800px;">
+
+<form id="register" onsubmit="return false">
+    <table>
+        <tr>
+            <td>
+                用户名:
+            </td>
+            <td>
+                <label><input type="text" name="username" v-model="username" id="username"></label>
+            </td>
+            <td>
+                <span id="tips"></span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                邮箱:
+            </td>
+            <td>
+                <label><input type="text" name="email" id="email" v-model="email"></label>
+            </td>
+            <td>
+                <span id="emailtips"></span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                邮箱验证码:
+            </td>
+            <td>
+                <label>
+                    <input type="text" name="email_verify" v-model="email_verify">
+                </label>
+            </td>
+            <td>
+                <button @click="sendemail">发送验证码</button>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                密码:
+            </td>
+            <td>
+                <label><input type="password" name="upassword" id="upassword" v-model="upassword" placeholder="6-16位之间"></label>
+            </td>
+            <td>
+                <span id="pwdtips"></span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                确认密码:
+            </td>
+            <td>
+                <label><input type="password" id="upasswordrepeat" name="upasswordrepeat" v-model="upasswordrepeat"></label>
+            </td>
+            <td>
+                <span id="pwdretips"></span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                验证码:
+            </td>
+            <td>
+                <label>
+                <input name="checkcode" type="text" id="checkcode" v-model="checkcode">
+                </label>
+            </td>
+            <td>
+                <img src="/checkcodeServlet" alt="验证码" @click="changeverifycode" id="verifyImg">
+                <a href="#" id="changImg" @click="changeverifycode" style="margin-left: 20px">看不清?换一张</a>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <label>
+                    <input type="checkbox" id="accept">
+                    <span class="checkable">同意《注册须知》</span>
+                </label>
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <label>
+                    <button id="regbtn" @click="register" style="width: 300px;">注册</button>
+                </label>
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <a href="/user/login.html">已有账号?点此登录</a>
+            </td>
+            <td></td>
+        </tr>
+    </table>
+</form>
+
+<script>
+    $(document).ready(function(){
+        $("#username").blur(function () {
+                axios({
+                    method: "GET",
+                    url: "/checkusernameifcanbeuseServlet",
+                    params:{
+                        username:$("#username").val()
+                    }
+                }).then(function (resp) {
+                    if (resp.data.msg=="该用户名可以使用"){
+                        $("#tips").css('color','green')
+                        $("#tips").text(resp.data.msg)
+                    }
+                    else {
+                        $("#tips").css('color','red')
+                        $("#tips").text(resp.data.msg)
+                    }
+
+                })
+            }
+        )
+        $("#email").blur(function () {
+            let reg = /^[a-zA-Z0-9]+([-_.][A-Za-zd]+)*@([a-zA-Z0-9]+[-.])+[A-Za-zd]{2,5}$/
+            if (reg.test($("#email").val())){
+                $("#emailtips").text('')
+            }
+            else {
+                $("#emailtips").css('color','red')
+                $("#emailtips").text('邮箱格式不正确');
+            }
+        })
+        $("#upassword").blur(function () {
+            if($("#upassword").val().length<6||$("#upassword").val().length>16){
+                $("#pwdtips").css('color','red')
+                $("#pwdtips").text('密码长度不正确,密码长度应在6-16个字符之间')
+            }
+            else
+            {
+                $("#pwdtips").text('')
+            }
+        })
+        $("#upasswordrepeat").blur(function () {
+            if($("#upassword").val()!=$("#upasswordrepeat").val()){
+                $("#pwdretips").css('color','red')
+                $("#pwdretips").text('两次输入密码不一致')
+            }
+            else {
+                $("#pwdretips").text('')
+            }
+        })
+    })
+    const {createApp} = Vue
+    createApp({
+            data() {
+                return {
+                    username: '',
+                    email: '',
+                    email_verify: '',
+                    upassword: '',
+                    upasswordrepeat: '',
+                    checkcode: '',
+                    msg: []
+                }
+            },
+            methods: {
+                sendemail: function () {
+                    axios({
+                        method: "POST",
+                        url: "/sendregisteremailServlet",
+                        data: "email=" + this.email
+                    }).then(function (resp) {
+                        var icontype = "error"
+                        if (resp.data.msg == '验证码发送成功') {
+                            icontype = 'success'
+                        }
+                        Swal.fire({
+                            icon: icontype,
+                            title: resp.data.msg,
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                    })
+                },
+                changeverifycode: function () {
+                    document.getElementById("verifyImg").src = "/checkcodeServlet?" + new Date().getMilliseconds()
+                },
+                register:function () {
+                    if ($("#tips").text()=="该用户名可以使用"){
+                        if (this.upassword==this.upasswordrepeat&&$("#upassword").val().length>=6&&$("#upassword").val().length<=16){
+                            if($("#accept").prop('checked')){
+                                if(this.upassword.length!=40)
+                                {
+                                    this.upassword = sha1(this.upassword)
+                                this.upasswordrepeat = sha1(this.upasswordrepeat)
+                                }
+
+                                axios({
+                                    method: "POST",
+                                    url: "/registerServlet",
+                                    data:"username="+this.username+"&email="+this.email+"&email_verify="+this.email_verify+"&upassword="+this.upassword+"&verify_code="+this.checkcode
+                                }).then(function (resp) {
+                                    if (resp.data.msg=="注册成功")
+                                    {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: resp.data.msg,
+                                            showConfirmButton: false,
+                                            timer: 1500
+                                        })
+                                    }
+                                    else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: resp.data.msg,
+                                            showConfirmButton: false,
+                                            timer: 1500
+                                        })
+                                    }
+                                })
+                            }
+                            else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: "必须同意注册须知才能注册",
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                })
+                            }
+
+                        }
+                        else{
+                            Swal.fire({
+                                icon: 'error',
+                                title: "两次密码输入不一致或密码长度不符合要求",
+                                showConfirmButton: false,
+                                timer: 1500
+                            })
+                        }
+
+                    }
+                    else
+                    {
+                        Swal.fire({
+                        icon: 'error',
+                        title: "该用户名无法注册,请修改",
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+
+                    }
+
+                }
+            }
+        }
+    ).mount('#register')
+
+</script>
+    </div>
+</div>
+</body>
+</html>
