@@ -33,5 +33,9 @@
         from user
         where username = #{username} and upassword = #{upassword};
     </select>
+    <select id="selectuser" resultType="tech.aaaaaa.pojo.User">
+        select *
+        from user where uid = #{uid} and verify = #{verify};
+    </select>
 
 </mapper>

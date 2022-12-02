@@ -28,7 +28,7 @@ public class checkusernameifcanbeuseServlet extends HttpServlet {
         } else if (username.length()<=2) {
             writer.print("{\"msg\":\"用户名过短,请更换一个\"}");
         } else if (!IsLetterDigit.stringchecknumal(username)) {
-            writer.print("{\"msg\":\"用户名只能由数字和字母构成\"}");
+            writer.print("{\"msg\":\"用户名只能由数字和字母或汉字构成\"}");
         } else {
             writer.print("{\"msg\":\"该用户名可以使用\"}");
         }

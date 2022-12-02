@@ -28,6 +28,10 @@
         <from>^/user/login$</from>
         <to type="forward">/user/login.html</to>
     </rule>
+    <rule>
+        <from>^/user/msg$</from>
+        <to type="forward">/user/msg.html</to>
+    </rule>
 
     <outbound-rule>
         <note>

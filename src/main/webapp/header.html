@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+  <script src="/js/axios.min.js"></script>
+  <script src="/js/jquery-3.0.0.js"></script>
+  <script src="/js/sweetalert2.all.min.js"></script>
+  <script src="/js/jquery.cookie.js"></script>
+  <link rel="stylesheet" href="/css/picnic.css">
+  <style>
+    .leftbtn:hover{
+      background-color: #aaa;
+    }
+    .leftbtn:active{
+      background-color: #ddd;
+    }
+    .headerbtn{
+      user-select: none;
+      width: 100px;
+      height: 50px;
+      text-align: center;
+      display: inline-block;
+      line-height: 50px;
+    }
+    .leftbtn{
+      float: left;
+    }
+    .rightbtn{
+      float: right;
+      background-color: #63e397;
+    }
+    .rightbtn:hover{
+      background-color: #0ef383;
+    }
+    .rightbtn:active{
+      background-color: #a7f5cd;
+    }
+    .rightbtn a{
+      color: black;
+    }
+    #menu{
+      width: 100px;
+      height: 250px;
+      float: right;
+      display: none;
+    }
+    .menubtn{
+      width: 100%;
+      height: 50px;
+      line-height: 50px;
+      text-align: center;
+      user-select: none;
+      background-color: #ccc;
+    }
+    .menubtn a{
+      color: black;
+    }
+    .menubtn:hover{
+      background-color: #aaa;
+    }
+    .menubtn:active{
+      background-color: #eee;
+    }
+    #menuusername{
+      display: none;
+    }
+    #logregdiv{
+      display: none;
+    }
+    #menubtnadiv a{
+      color: black;
+    }
+  </style>
+    <title>header</title>
+</head>
+<body>
+<div id="app">
+<div style="width: 100%;border-bottom: #aaaaaa solid 1px;height: 50px;">
+<div style="width: 1190px;margin: 0 auto" id="menubtnadiv">
+  <a href="/index">
+  <div class="headerbtn leftbtn">
+    首页
+  </div>
+  </a>
+  <div class="headerbtn leftbtn">
+    版区
+  </div>
+  <div class="headerbtn leftbtn">
+    收藏
+  </div>
+  <div class="headerbtn leftbtn">
+    消息
+  </div>
+  <div class="headerbtn leftbtn">
+    搜索
+  </div>
+  <div class="headerbtn rightbtn" id="menuusername">
+  </div>
+  <a href="/user/login.html">
+  <div class="headerbtn rightbtn" id="logregdiv">
+      登录/注册
+  </div>
+  </a>
+  <div style="width: 1190px;margin: 0 auto;position: absolute;top: 50px">
+    <div id="menu">
+      <div class="menubtn"><a>个人主页</a></div>
+      <div class="menubtn"><a>用户设置</a></div>
+      <div class="menubtn"><a>用户收藏</a></div>
+      <div class="menubtn"><a>用户消息</a></div>
+      <div class="menubtn" id="logout"><a>退出登录</a></div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+</div>
+<script>
+$(document).ready(function () {
+  var uid=0
+  var userstatus=0
+      axios({
+        method: "post",
+        url: "/getusernameServlet"
+      }).then(function (resp) {
+        userstatus=resp.data.userstatus
+        if (userstatus==200){
+          $("#menuusername").css('display','inline-block')
+          uid=resp.data.uid
+          $("#menuusername").text(resp.data.username)
+        }
+        else{
+          $("#logregdiv").css('display','inline-block')
+        }
+      })
+  $("#menuusername").click(function () {
+    $("#menu").toggle(500)
+  })
+  $("#logout").click(function (){
+    $.cookie("uid",null,{expires: -1,path: "/"})
+    $.cookie("verifycode",null,{expires: -1,path: "/"})
+    location.reload();
+  })
+})
+</script>
+
+</body>
+</html>

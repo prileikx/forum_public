@@ -2,18 +2,24 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <script src="../js/jquery-3.0.0.js"></script>
-    <title>Title</title>
+    <script src="/js/vue.global.js"></script>
+    <script src="/js/axios.min.js"></script>
+    <script src="/js/jquery-3.0.0.js"></script>
+    <script src="/js/sweetalert2.all.min.js"></script>
+    <script src="/js/sha1.min.js"></script>
+    <link rel="stylesheet" href="/css/picnic.css">
+    <title>首页</title>
 </head>
 <body>
-<template>
-    <div class="hello">
-        test
-    </div>
-</template>
+<div id="header"></div>
 <form action="/index" method="post">
   <input type="text" placeholder="输入信息" name="msg">
   <input type="submit" placeholder="按钮">
 </form>
+<script>
+    $(document).ready(function () {
+        $("#header").load("../header.html")
+    })
+</script>
 </body>
 </html>

@@ -23,8 +23,6 @@ public class loginServlet extends HttpServlet {
         UserMapper userMapper=sqlSession.getMapper(UserMapper.class);
         String username = request.getParameter("username");
         String upassword = request.getParameter("upassword");
-        System.out.println(username);
-        System.out.println(upassword);
         PrintWriter writer = response.getWriter();
         Integer uid = userMapper.login(username,upassword);
         if (uid!=null){

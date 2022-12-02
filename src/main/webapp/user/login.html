@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <script src="../js/vue.global.js"></script>
@@ -17,7 +17,6 @@
         input {
             width: 300px;
         }
-
         button {
             width: 300px;
         }
@@ -25,6 +24,10 @@
     <title>登录</title>
 </head>
 <body style="width: 100%;">
+<div id="header"></div>
+<script>
+    $("#header").load("../header.html")
+</script>
 <div class="flex center one demo" id="app">
     <div class="500" style="width: 500px;">
         <table>
@@ -61,7 +64,7 @@
             <tr>
                 <td></td>
                 <td>
-                    <button @click="login">登录</button>
+                    <button @click="login" style="width: 300px;">登录</button>
                 </td>
             </tr>
             <tr>
@@ -101,6 +104,7 @@
                         var icontype = "error"
                         if (resp.data.msg == '登录成功') {
                             icontype = 'success'
+                            setTimeout("window.location.href='/index'", 1000)
                         }
                         Swal.fire({
                             icon: icontype,

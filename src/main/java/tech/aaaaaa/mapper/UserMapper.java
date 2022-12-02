@@ -12,4 +12,5 @@ public interface UserMapper {
     Integer checkemailifwasregister(@Param("email")String email);
     Integer login(@Param("username")String username,@Param("upassword")String upassword);
     void addloginverify(@Param("uid")Integer uid,@Param("verify")String verify);
+    User selectuser(@Param("uid")Integer uid,@Param("verify")String verify);
 }
