@@ -26,6 +26,7 @@ public class selectPostpcnameServlet extends HttpServlet {
         List<PostClass> postClass = postClassMapper.selectPostClasspcname();
         String pc = JSON.toJSONString(postClass);
         writer.print(pc);
+        sqlSession.close();
         writer.flush();
         writer.close();
     }

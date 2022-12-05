@@ -1,4 +1,4 @@
-package tech.aaaaaa.user;
+package tech.aaaaaa.post;
 
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -10,11 +10,11 @@ import javax.servlet.annotation.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@WebServlet(name = "UserServlet", value = "/user/msg/*")
-public class UserServlet extends HttpServlet {
+@WebServlet(name = "PostClassServlet", value = "/PostClass/*")
+public class PostClassServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.getRequestDispatcher("/user/msg").forward(request,response);
+        request.getRequestDispatcher("/PostList").forward(request,response);
     }
 
     @Override

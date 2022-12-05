@@ -49,6 +49,7 @@ public class userinformationServlet extends HttpServlet {
             String userjson = JSON.toJSONString(user);
             writer.print(userjson);
         }
+        sqlSession.close();
         writer.flush();
         writer.close();
     }

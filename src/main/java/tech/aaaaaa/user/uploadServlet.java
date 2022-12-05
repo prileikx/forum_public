@@ -17,7 +17,7 @@ import javax.servlet.annotation.*;
 import java.io.*;
 import java.util.List;
 import java.util.UUID;
-
+//上传文件用
 @WebServlet(name = "uploadServlet", value = "/uploadServlet")
 public class uploadServlet extends HttpServlet {
     @Override
@@ -26,7 +26,7 @@ public class uploadServlet extends HttpServlet {
         SqlSessionFactory sqlSessionFactory = SqlSessionFactoryUtils.getSqlSessionFactory();
         SqlSession sqlSession = sqlSessionFactory.openSession(true);
         PrintWriter writer = response.getWriter();
-
+        sqlSession.close();
         writer.flush();
         writer.close();
     }
@@ -129,8 +129,6 @@ public class uploadServlet extends HttpServlet {
                             //JNI= java native Interface
                             //implements Serializable : 标记接口 , JVM-->java栈 本地方法栈 native -->C++
 
-                            System.out.println(FileName);
-                            System.out.println(fileExtName);
                             response.getWriter().print(FileName);
                             //可以使用UUID(唯一标识的通用码),保证文件名唯一
                             String uuidPath = UUID.randomUUID().toString();//生成一共随机的uuid
@@ -170,5 +168,6 @@ public class uploadServlet extends HttpServlet {
                 writer.print("{\"msg\":\"用户验证错误,请重新登陆\"}");
             }
         }
+        sqlSession.close();
     }
 }

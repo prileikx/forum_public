@@ -84,6 +84,7 @@ public class getPostList extends HttpServlet {
             System.out.println(emptyPostListString);
             writer.print(emptyPostListString);
         }
+        sqlSession.close();
         writer.flush();
         writer.close();
     }

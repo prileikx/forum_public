@@ -29,7 +29,7 @@ public class usergroupServlet extends HttpServlet {
         UserGroup userGroup = userGroupMapper.selectUserGroup(ugid);
         String userjson = JSON.toJSONString(userGroup);
         writer.print(userjson);
-        System.out.println(userjson);
+        sqlSession.close();
         writer.flush();
         writer.close();
     }

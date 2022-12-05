@@ -32,6 +32,7 @@ public class checkusernameifcanbeuseServlet extends HttpServlet {
         } else {
             writer.print("{\"msg\":\"该用户名可以使用\"}");
         }
+        sqlSession.close();
         writer.flush();
         writer.close();
     }

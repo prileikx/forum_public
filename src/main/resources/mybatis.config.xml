@@ -9,12 +9,19 @@
     <environments default="development">
         <environment id="development">
             <transactionManager type="JDBC"/>
-            <dataSource type="POOLED">
-                <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
-                <property name="url" value="jdbc:mysql://localhost:3306/blog?useSSL=false&amp;useUnicode=true&amp;useServerPrepStmts=true&amp;characterEncoding=UTF-8&amp;allowPublicKeyRetrieval=true
+            <dataSource type="tech.aaaaaa.util.DruidDataSourceFactory">
+                <property name="driverClass" value="com.mysql.cj.jdbc.Driver"/>
+                <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/blog?useSSL=false&amp;useUnicode=true&amp;useServerPrepStmts=true&amp;characterEncoding=UTF-8&amp;allowPublicKeyRetrieval=true
 "/>
                 <property name="username" value="blog"/>
                 <property name="password" value="123456"/>
+                <property name="maxActive" value="15"/>
+                <property name="maxIdle" value="30"/>
+                <!--                超时时长,单位为秒,超过规定秒数返回失败,毫秒,设置为了5分钟-->
+                <property name="maxWait" value="300000"/>
+                <property name="removeAbandoned" value="true"/>
+<!--                超时时长,单位为秒,超过规定秒数强制关闭连接-->
+                <property name="removeAbandonedTimeout" value="200"/>
             </dataSource>
         </environment>
     </environments>

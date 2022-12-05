@@ -16,7 +16,7 @@ import javax.servlet.http.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-
+//发送注册邮件
 @WebServlet(name = "sendregisteremailServlet", value = "/sendregisteremailServlet")
 public class sendregisteremailServlet extends HttpServlet {
     @Override
@@ -56,6 +56,7 @@ public class sendregisteremailServlet extends HttpServlet {
         else {
             writer.print("{\"msg\":\"邮箱格式不正确\"}");
         }
+        sqlSession.close();
         writer.flush();
         writer.close();
     }

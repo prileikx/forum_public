@@ -39,6 +39,7 @@ public class sendpostServlet extends HttpServlet {
         }else
         {
             writer.print("{\"msg\":\"登陆状态错误,请重新登录\"}");
+            sqlSession.close();
             return;
         }
         String title = request.getParameter("titile");
@@ -48,6 +49,7 @@ public class sendpostServlet extends HttpServlet {
         User user = userMapper.selectuser(Integer.valueOf(uid),verifycode);
         if (user == null){
             writer.print("{\"msg\":\"登陆状态错误,请重新登录\"}");
+            sqlSession.close();
             return;
         }
         else{
@@ -62,6 +64,7 @@ public class sendpostServlet extends HttpServlet {
                 writer.print("{\"msg\":\"用户权限不足\"}");
             }
         }
+        sqlSession.close();
         writer.flush();
         writer.close();
     }

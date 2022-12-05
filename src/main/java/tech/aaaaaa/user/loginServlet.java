@@ -42,6 +42,7 @@ public class loginServlet extends HttpServlet {
         }else {
             writer.print("{\"msg\":\"用户名或密码错误\"}");
         }
+        sqlSession.close();
         writer.flush();
         writer.close();
     }

@@ -32,6 +32,10 @@
         <from>^/user/msg$</from>
         <to type="forward">/user/msg.html</to>
     </rule>
+    <rule>
+        <from>^/PostList$</from>
+        <to type="forward">/PostList.html</to>
+    </rule>
     <outbound-rule>
         <note>
             The outbound-rule specifies that when response.encodeURL is called (if you are using JSTL c:url)
