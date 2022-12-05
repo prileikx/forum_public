@@ -7,19 +7,108 @@
     <script src="/js/jquery-3.0.0.js"></script>
     <script src="/js/sweetalert2.all.min.js"></script>
     <script src="/js/sha1.min.js"></script>
+    <script src="/js/flickity.pkgd.min.js"></script>
+    <link rel="stylesheet" href="/css/flickity.css">
     <link rel="stylesheet" href="/css/picnic.css">
+    <style>
+        #indexdiv{
+            text-align: center;
+        }
+        .postclassdiv{
+            border: #aaaaaa solid 1px;
+        }
+        #postclassimg{
+            width: 300px;
+            margin-top:10px;
+        }
+        .flickity-page-dots{
+            background-color: rgba(255,255,255,0.8);
+            border-radius: 5px;
+        }
+    </style>
     <title>首页</title>
 </head>
-<body>
+<body style="width: 100%">
 <div id="header"></div>
-<form action="/index" method="post">
-  <input type="text" placeholder="输入信息" name="msg">
-  <input type="submit" placeholder="按钮">
-</form>
 <script>
     $(document).ready(function () {
         $("#header").load("../header.html")
     })
+</script>
+<div style="width: 1190px;margin: 0 auto" id="indexdiv">
+    <div style="width: 832px;display: inline-block;height: 250px;margin: 10px;margin-bottom: 45px">
+        <div class="gallery js-flickity" data-flickity-options='{ "wrapAround": true, "autoPlay": 2000 }'>
+            <div class="gallery-cell">
+                <img src="/resource/img/indexlunboimg/1.jpg">
+            </div>
+            <div class="gallery-cell">
+                <img src="/resource/img/indexlunboimg/2.jpg">
+            </div>
+            <div class="gallery-cell">
+                <img src="/resource/img/indexlunboimg/3.jpg">
+            </div>
+            <div class="gallery-cell">
+                <img src="/resource/img/indexlunboimg/4.jpg">
+            </div>
+            <div class="gallery-cell">
+                <img src="/resource/img/indexlunboimg/5.jpg">
+            </div>
+        </div>
+    </div>
+    <div style="width: 300px;display: inline-block;float:right;margin-left: 10px">
+        TODO
+    </div>
+    <div style="width: 880px;display: inline-block;">
+<div class="flex two">
+    <div v-for="u in user">
+        <div style="background-color:rgba(255,255,255,0.8);">
+        <a :href="'/PostClass/'+u.englishname" style="color: black;">
+        <div class="postclassdiv">
+        <div>
+            <img :src="'/resource/img/PostClass/'+u.pcid+'.jpg'" id="postclassimg">
+        </div>
+        {{u.pcname}}
+        </div>
+        </a>
+        </div>
+    </div>
+</div>
+    </div>
+    <div style="min-height: 300px;background-color:rgba(255,255,255,0.8);display: inline-block;float: right;width: 300px;margin-left: 10px;text-align: left;">
+        <div style="margin: 10px">
+        <p>1.请不要发无意义帖子</p>
+        <p>2.勿发广告</p>
+        <p>3.请勿对他人进行辱骂或人身攻击等,文明交流</p>
+        <p>4.遇到违规帖子请举报,管理员会进行处理</p>
+        <p>5.如果对网站有任何建议请联系站长</p>
+        <p>6.发帖请遵守国家法律法规,禁止发黄赌毒相关</p>
+        </div>
+    </div>
+</div>
+<script>
+    const {createApp} = Vue
+    createApp({
+        data() {
+            return {
+                user: []
+            }
+        },
+        mounted() {
+            var _this = this;
+            axios({
+                method: "post",
+                url: "/selectPostpcnameServlet"
+            }).then(function (resp) {
+                _this.user = resp.data
+                _this.user.pcid = "/resource/img/PostClass"+resp.data.pcid
+            })
+        }
+    }).mount('#indexdiv')
+    $('#galleryjs').flickity({
+        // options
+        cellAlign: 'left',
+        contain: true
+    });
 </script>
 </body>
 </html>

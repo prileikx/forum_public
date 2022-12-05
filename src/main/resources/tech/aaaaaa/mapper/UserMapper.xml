@@ -13,6 +13,11 @@
         set verify = #{verify}
         where uid=#{uid};
     </update>
+    <update id="uploadimg">
+        update user
+        set img = #{img}
+        where uid=#{uid};
+    </update>
     <select id="checkUserEmailIfWasRegister" resultType="java.lang.Integer">
         select count(*)
         from user
@@ -36,6 +41,10 @@
     <select id="selectuser" resultType="tech.aaaaaa.pojo.User">
         select *
         from user where uid = #{uid} and verify = #{verify};
+    </select>
+    <select id="selectugid" resultType="java.lang.Integer">
+        select ugid
+        from user where uid=#{reuid};
     </select>
 
 </mapper>

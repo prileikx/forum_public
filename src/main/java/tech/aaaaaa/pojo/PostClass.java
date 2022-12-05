@@ -4,14 +4,14 @@ public class PostClass {
     private Integer pcid;
     private String pcname;
     private Integer limits;
+    private String englishname;
 
-    @Override
-    public String toString() {
-        return "PostClass{" +
-                "pcid=" + pcid +
-                ", pcname='" + pcname + '\'' +
-                ", limits=" + limits +
-                '}';
+    public String getEnglishname() {
+        return englishname;
+    }
+
+    public void setEnglishname(String englishname) {
+        this.englishname = englishname;
     }
 
     public Integer getPcid() {

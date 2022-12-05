@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <script src="/js/vue.global.js"></script>
+    <script src="/js/axios.min.js"></script>
+    <script src="/js/jquery-3.0.0.js"></script>
+    <script src="/js/sweetalert2.all.min.js"></script>
+    <script src="/js/sha1.min.js"></script>
+    <link rel="stylesheet" href="/css/picnic.css">
+    <style>
+        #postclasslist{
+            text-align: left;
+        }
+        .postclassdiv{
+            border: #aaaaaa solid 1px;
+        }
+        #postclassimg{
+            width: 300px;
+            margin-top:10px;
+        }
+        .postremarks{
+            font-size: 10px;
+        }
+    </style>
+    <title>版区</title>
+</head>
+<body>
+<div id="header"></div>
+<script>
+    $(document).ready(function () {
+        $("#header").load("../header.html")
+    })
+</script>
+
+<div style="width: 1190px;margin: 0 auto" id="postclasslist">
+    <div style="width: 880px;display: inline-block;margin-top: 10px;">
+        <div class="flex one">
+            <div v-for="post in postlist">
+                <div style="background-color:rgba(255,255,255,0.8);">
+                    <a :href="'/Posts/'+post.pid" style="color: black;">
+                        <div class="postclassdiv">
+                            <div>
+                                <p>&nbsp;&nbsp; {{post.title}}</p>
+                            </div>
+                            <div class="postremarks">
+                                &nbsp;&nbsp;
+                                发帖时间:{{post.sendtime}}
+                                查看数:{{post.viewcount}}
+                                回复数:{{post.replycount}}
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="min-height: 300px;background-color:rgba(255,255,255,0.8);display: inline-block;margin-top: 10px;float: right;width: 300px;margin-left: 10px;text-align: left;">
+        <div style="margin: 10px">
+            <p>1.请不要发无意义帖子</p>
+            <p>2.勿发广告</p>
+            <p>3.请勿对他人进行辱骂或人身攻击等,文明交流</p>
+            <p>4.遇到违规帖子请举报,管理员会进行处理</p>
+            <p>5.如果对网站有任何建议请联系站长</p>
+            <p>6.发帖请遵守国家法律法规,禁止发黄赌毒相关</p>
+        </div>
+    </div>
+</div>
+<script>
+    const {createApp} = Vue
+    createApp({
+        data() {
+            return {
+                postlist: []
+            }
+        },
+        mounted() {
+            URL = document.URL
+            resourceposition = URL.indexOf("PostClass");
+            resourceposition = resourceposition+10
+            postclass = URL.substring(resourceposition)
+            sendurl = "/getPostList/"+postclass
+            var _this = this;
+            axios({
+                method: "post",
+                url: sendurl
+            }).then(function (resp) {
+                _this.postlist = resp.data
+                console.log(resp.data)
+            })
+        }
+    }).mount('#postclasslist')
+</script>
+</body>
+</html>

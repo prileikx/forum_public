@@ -9,8 +9,13 @@
         select limits
         from postclass where pcid=#{pcid};
     </select>
-    <select id="selectPostClasspcname">
+    <select id="selectPostClasspcname" resultType="tech.aaaaaa.pojo.PostClass">
         select *
         from postclass;
     </select>
+    <select id="selectpcid" resultType="java.lang.Integer">
+        select pcid
+        from postclass where englishname=#{postclassenglishname};
+    </select>
+
 </mapper>

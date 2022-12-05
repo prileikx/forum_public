@@ -6,7 +6,7 @@ public class Posts {
     private String title;
     private String sendtime;
     private Integer viewcount;
-    private Integer replaycount;
+    private Integer replycount;
     private String edittime;
     private Integer edituid;
     private Integer Integerpcid;
@@ -20,7 +20,7 @@ public class Posts {
                 ", title='" + title + '\'' +
                 ", sendtime='" + sendtime + '\'' +
                 ", viewcount=" + viewcount +
-                ", replaycount=" + replaycount +
+                ", replycount=" + replycount +
                 ", edittime='" + edittime + '\'' +
                 ", edituid=" + edituid +
                 ", Integerpcid=" + Integerpcid +
@@ -68,12 +68,12 @@ public class Posts {
         this.viewcount = viewcount;
     }
 
-    public Integer getReplaycount() {
-        return replaycount;
+    public Integer getReplycount() {
+        return replycount;
     }
 
-    public void setReplaycount(Integer replaycount) {
-        this.replaycount = replaycount;
+    public void setReplycount(Integer replycount) {
+        this.replycount = replycount;
     }
 
     public String getEdittime() {

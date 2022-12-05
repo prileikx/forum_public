@@ -5,8 +5,12 @@
 <!--namespace名称空间-->
 <mapper namespace="tech.aaaaaa.mapper.UserGroupMapper">
 
-    <select id="selectUserLimirs" resultType="java.lang.Integer">
+    <select id="selectUserLimits" resultType="java.lang.Integer">
         select limits
+        from usergroup where ugid=#{ugid};
+    </select>
+    <select id="selectUserGroup" resultType="tech.aaaaaa.pojo.UserGroup">
+        select *
         from usergroup where ugid=#{ugid};
     </select>
 </mapper>

@@ -9,4 +9,8 @@
         insert into posts (uid, title, sendtime , pcid, content)
         values (#{uid},#{title},now(),#{pcid},#{content});
     </insert>
+    <select id="selectpostList" resultType="tech.aaaaaa.pojo.Posts">
+        select *
+        from posts where pcid=#{pcid};
+    </select>
 </mapper>

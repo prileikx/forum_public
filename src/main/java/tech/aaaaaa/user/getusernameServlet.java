@@ -38,7 +38,6 @@ public class getusernameServlet extends HttpServlet {
             writer.print("{\"userstatus\":\"400\"}");
         }else {
             User user = userMapper.selectuser(Integer.parseInt(uid),verifycode);
-            user.toString();
             String username = user.getUsername();
             writer.print("{\"userstatus\":200,\"username\":\""+username+"\",\"uid\":\""+uid+"\"}");
         }

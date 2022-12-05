@@ -10,20 +10,32 @@ public class User {
     private Integer ifconfirmemail;
     private String verify;
     private String registertime;
+    private Integer postcount;
+    private Integer replycount;
+    private String img;
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "uid=" + uid +
-                ", username='" + username + '\'' +
-                ", describes='" + describes + '\'' +
-                ", upassword='" + upassword + '\'' +
-                ", email='" + email + '\'' +
-                ", ugid=" + ugid +
-                ", ifconfirmemail=" + ifconfirmemail +
-                ", verify='" + verify + '\'' +
-                ", registertime=" + registertime +
-                '}';
+    public String getImg() {
+        return img;
+    }
+
+    public void setImg(String img) {
+        this.img = img;
+    }
+
+    public Integer getPostcount() {
+        return postcount;
+    }
+
+    public void setPostcount(Integer postcount) {
+        this.postcount = postcount;
+    }
+
+    public Integer getReplycount() {
+        return replycount;
+    }
+
+    public void setReplycount(Integer replycount) {
+        this.replycount = replycount;
     }
 
     public Integer getUid() {

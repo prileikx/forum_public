@@ -13,4 +13,6 @@ public interface UserMapper {
     Integer login(@Param("username")String username,@Param("upassword")String upassword);
     void addloginverify(@Param("uid")Integer uid,@Param("verify")String verify);
     User selectuser(@Param("uid")Integer uid,@Param("verify")String verify);
+    Integer selectugid(@Param("reuid")Integer reuid);
+    Integer uploadimg(@Param("img")String img,@Param("uid")Integer uid);
 }

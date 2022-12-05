@@ -6,7 +6,6 @@ import tech.aaaaaa.mapper.PostClassMapper;
 import tech.aaaaaa.mapper.PostMapper;
 import tech.aaaaaa.mapper.UserGroupMapper;
 import tech.aaaaaa.mapper.UserMapper;
-import tech.aaaaaa.pojo.PostClass;
 import tech.aaaaaa.pojo.User;
 import tech.aaaaaa.util.SqlSessionFactoryUtils;
 
@@ -55,7 +54,7 @@ public class sendpostServlet extends HttpServlet {
             PostClassMapper postClassMapper = sqlSession.getMapper(PostClassMapper.class);
             UserGroupMapper userGroupMapper = sqlSession.getMapper(UserGroupMapper.class);
             //检查用户权限是否大于等于版区权限
-            if (userGroupMapper.selectUserLimirs(user.getUgid())>=postClassMapper.selectPostClassLimits(pcid)){
+            if (userGroupMapper.selectUserLimits(user.getUgid())>=postClassMapper.selectPostClassLimits(pcid)){
                 postMapper.insertpost(Integer.valueOf(uid),title,Integer.valueOf(pcid),content);
                 writer.print("{\"msg\":\"发送成功\"}");
             }

@@ -1,8 +1,10 @@
 package tech.aaaaaa.mapper;
 
 import org.apache.ibatis.annotations.Param;
+import tech.aaaaaa.pojo.UserGroup;
 
 public interface UserGroupMapper {
     //查询用户权限
-    Integer selectUserLimirs(@Param("ugid")Integer ugid);
+    Integer selectUserLimits(@Param("ugid")Integer ugid);
+    UserGroup selectUserGroup(@Param("ugid")Integer ugid);
 }
