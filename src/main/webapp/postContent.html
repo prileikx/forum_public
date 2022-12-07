@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <script src="/js/vue.global.js"></script>
+    <script src="/js/axios.min.js"></script>
+    <script src="/js/jquery-3.0.0.js"></script>
+    <script src="/js/sweetalert2.all.min.js"></script>
+    <script src="/js/sha1.min.js"></script>
+    <script src="/js/flickity.pkgd.min.js"></script>
+    <script src="/js/tinymce.min.js"></script>
+    <link rel="stylesheet" href="/css/flickity.css">
+    <link rel="stylesheet" href="/css/picnic.css">
+    <title>帖子详情</title>
+    <style>
+        #postclasslist {
+            text-align: left;
+        }
+
+        #postclassimg {
+            width: 300px;
+            margin-top: 10px;
+        }
+
+        .postremarks {
+            font-size: 10px;
+        }
+
+        .eachpost {
+            background-color: rgba(255, 255, 255, 0.8);
+            margin: 0.6em;
+            border: #aaaaaa solid 1px;
+        }
+    </style>
+</head>
+<body style="width: 100%;">
+<div id="header"></div>
+<script>
+    $(document).ready(function () {
+        $("#header").load("/header.html")
+    })
+</script>
+<div style="width: 1190px;margin: 0 auto" id="postclasslist">
+    <div style="width: 1190px;display: inline-block;margin-top: 10px;">
+        <div id="pcl">
+            <div class="eachpost">
+                <div class="postclassdiv">
+                    <div>
+                        <p style="margin: 10px">标题:{{post.title}}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="eachpost" style="position: relative;min-height: 150px" v-if="page==1">
+                <div style="width: 100px;height: 134px;display: inline-block;margin-left: 10px;margin-right: 0;margin-top: 10px;margin-bottom: auto;float:left;">
+                    <div>
+                        <img :src="'/resource/img/upload/'+post.img" style="width: 100px;height: 100px;">
+                    </div>
+                    <div style="text-align: center">
+                        {{post.username}}
+                    </div>
+                </div>
+                <div style="display: inline-block;margin: 10px;margin-left: 0px;width: 1000px;height: 100%;">
+                    <div class="postclassdiv">
+                        <div style="margin-left: 10px;float: top">
+                            {{post.content}}
+                        </div>
+                        <div class="postremarks" style="margin: 10px;">
+                            <p>
+                                发帖时间:{{post.sendtime}}
+                                查看数:{{post.viewcount}}
+                                回复数:{{post.replycount}}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div v-for="r in replylist">
+                <div class="eachpost" style="position: relative;min-height: 150px">
+                    <div style="width: 100px;height: 134px;display: inline-block;margin-left: 10px;margin-right: 10px;margin-top: 10px;margin-bottom: auto;float:left;">
+                        <div>
+                            <img :src="'/resource/img/upload/'+r.img" style="width: 100px;height: 100px;">
+                        </div>
+                        <div style="text-align: center">
+                            {{r.username}}
+                        </div>
+                    </div>
+                    <div class="postclassdiv">
+                        <div>
+                            <p style="margin: 10px"> {{r.content}}</p>
+                        </div>
+                        <div class="postremarks" style="margin: 10px">
+                            <p>
+                                发帖时间:{{r.sendtime}}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    const {createApp} = Vue
+    createApp({
+        data() {
+            return {
+                post: [],
+                replylist: [],
+                page:0,
+            }
+        },
+        mounted() {
+            URL = document.URL
+            resourcepositionstart = URL.indexOf("Posts");
+            resourcepositionstart = resourcepositionstart + 6
+            resourcepositionend = URL.indexOf("?");
+            pagepos = URL.indexOf("page=");
+            page = URL.substring(pagepos + 5)
+            this.page=page
+            resourcepositionend = resourcepositionend
+            pid = URL.substring(resourcepositionstart, resourcepositionend)
+            sendurl = "/getPostContentServlet/" + pid + '?page=' + page
+            console.log("page" + page)
+            var _this = this;
+            axios({
+                method: "post",
+                url: sendurl
+            }).then(function (resp) {
+                _this.post = resp.data
+                console.log(resp.data)
+            })
+            axios({
+                method: "get",
+                url: "/getReplyServlet" + '?page=' + page + "&pid=" + pid
+            }).then(function (resp) {
+                _this.replylist = resp.data
+                console.log(resp.data)
+            })
+        }
+    }).mount('#postclasslist')
+</script>
+</body>
+</html>

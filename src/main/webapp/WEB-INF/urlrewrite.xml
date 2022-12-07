@@ -36,6 +36,10 @@
         <from>^/PostList$</from>
         <to type="forward">/PostList.html</to>
     </rule>
+    <rule>
+        <from>^/postContent$</from>
+        <to type="forward">/postContent.html</to>
+    </rule>
     <outbound-rule>
         <note>
             The outbound-rule specifies that when response.encodeURL is called (if you are using JSTL c:url)

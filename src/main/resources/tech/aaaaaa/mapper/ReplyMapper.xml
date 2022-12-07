@@ -5,4 +5,8 @@
 <!--namespace名称空间-->
 <mapper namespace="tech.aaaaaa.mapper.ReplyMapper">
 
+    <select id="replyList" resultType="tech.aaaaaa.pojo.Reply">
+        select reply.*,user.username,user.img
+        from reply join user on user.uid = reply.uid where pid=#{pid} limit #{start},10;
+    </select>
 </mapper>

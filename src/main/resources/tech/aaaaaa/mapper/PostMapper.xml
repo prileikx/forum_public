@@ -13,4 +13,8 @@
         select *
         from posts where pcid=#{pcid};
     </select>
+    <select id="selectPostContent" resultType="tech.aaaaaa.pojo.Posts">
+        select posts.*,user.username,user.img
+        from posts join user on user.uid=posts.uid where pid=#{pid};
+    </select>
 </mapper>

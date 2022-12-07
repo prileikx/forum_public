@@ -19,19 +19,20 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-@WebServlet("/getPostList/*")
-public class getPostList extends HttpServlet {
+@WebServlet(name = "getPostContentServlet", value = "/getPostContentServlet/*")
+public class getPostContentServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json;charset=utf-8");
         SqlSessionFactory sqlSessionFactory = SqlSessionFactoryUtils.getSqlSessionFactory();
         SqlSession sqlSession = sqlSessionFactory.openSession(true);
         PrintWriter writer = response.getWriter();
+        Integer page = 1;
+        page = Integer.valueOf(request.getParameter("page"));
         String URI = request.getRequestURI();
-        String pcenglishname = URI.substring(13);
-        PostClassMapper postClassMapper = sqlSession.getMapper(PostClassMapper.class);
-        Integer pcid = postClassMapper.selectpcid(pcenglishname);
-        List<Posts> emptyPostList = new ArrayList<>();
+        String pid = URI.substring(23);
+        PostMapper postMapper = sqlSession.getMapper(PostMapper.class);
+        Posts post = postMapper.selectPostContent(Integer.valueOf(pid));
         Posts emptyPost = new Posts();
         Cookie[] cookies = request.getCookies();
         String uid = null;
@@ -48,6 +49,7 @@ public class getPostList extends HttpServlet {
         }
         Integer limits = 0;
         if (uid == null || verifycode == null) {
+            //默认不登录状态下权限为50
             limits = 50;
         } else {
             UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
@@ -57,30 +59,22 @@ public class getPostList extends HttpServlet {
                 limits = userGroupMapper.selectUserLimits(user.getUgid());
             }
         }
-        if (limits>=postClassMapper.selectPostClassLimits(pcid)){
-        if (pcid != null) {
-            PostMapper postMapper = sqlSession.getMapper(PostMapper.class);
-            List<Posts> posts = postMapper.selectpostList(pcid);
-            if (posts != null && !posts.isEmpty()) {
-                String postList = JSON.toJSONString(posts);
-                writer.print(postList);
+        PostClassMapper postClassMapper = sqlSession.getMapper(PostClassMapper.class);
+        Integer pcid = post.getPcid();
+        String poststring = JSON.toJSONString(post);
+        if (limits >= postClassMapper.selectPostClassLimits(pcid)) {
+            if (pcid != null) {
+                String postContent = JSON.toJSONString(post);
+                writer.print(postContent);
             } else {
-                emptyPost.setTitle("版区没有任何帖子");
-                emptyPostList.add(emptyPost);
-                String emptyPostListString = JSON.toJSONString(emptyPostList);
+                emptyPost.setTitle("主题不存在");
+                String emptyPostListString = JSON.toJSONString(emptyPost);
                 writer.print(emptyPostListString);
             }
         } else {
-            emptyPost.setTitle("不存在的版区");
-            emptyPostList.add(emptyPost);
-            String emptyPostListString = JSON.toJSONString(emptyPostList);
-            writer.print(emptyPostListString);
-        }
-        }else {
             emptyPost.setTitle("访问权限不足");
-            emptyPostList.add(emptyPost);
-            String emptyPostListString = JSON.toJSONString(emptyPostList);
-            writer.print(emptyPostListString);
+            String emptyPostString = JSON.toJSONString(emptyPost);
+            writer.print(emptyPostString);
         }
         sqlSession.close();
         writer.flush();

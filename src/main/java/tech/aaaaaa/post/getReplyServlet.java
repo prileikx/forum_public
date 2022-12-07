@@ -3,11 +3,9 @@ package tech.aaaaaa.post;
 import com.alibaba.fastjson.JSON;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
-import tech.aaaaaa.mapper.PostClassMapper;
-import tech.aaaaaa.mapper.PostMapper;
-import tech.aaaaaa.mapper.UserGroupMapper;
-import tech.aaaaaa.mapper.UserMapper;
+import tech.aaaaaa.mapper.*;
 import tech.aaaaaa.pojo.Posts;
+import tech.aaaaaa.pojo.Reply;
 import tech.aaaaaa.pojo.User;
 import tech.aaaaaa.util.SqlSessionFactoryUtils;
 
@@ -19,20 +17,18 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-@WebServlet("/getPostList/*")
-public class getPostList extends HttpServlet {
+@WebServlet(name = "getReplyServlet", value = "/getReplyServlet")
+public class getReplyServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json;charset=utf-8");
         SqlSessionFactory sqlSessionFactory = SqlSessionFactoryUtils.getSqlSessionFactory();
         SqlSession sqlSession = sqlSessionFactory.openSession(true);
         PrintWriter writer = response.getWriter();
-        String URI = request.getRequestURI();
-        String pcenglishname = URI.substring(13);
-        PostClassMapper postClassMapper = sqlSession.getMapper(PostClassMapper.class);
-        Integer pcid = postClassMapper.selectpcid(pcenglishname);
-        List<Posts> emptyPostList = new ArrayList<>();
-        Posts emptyPost = new Posts();
+        Integer page = 1;
+        page = Integer.valueOf(request.getParameter("page"));
+        System.out.println(page);
+        ReplyMapper replyMapper = sqlSession.getMapper(ReplyMapper.class);
         Cookie[] cookies = request.getCookies();
         String uid = null;
         String verifycode = null;
@@ -48,6 +44,7 @@ public class getPostList extends HttpServlet {
         }
         Integer limits = 0;
         if (uid == null || verifycode == null) {
+            //默认不登录状态下权限为50
             limits = 50;
         } else {
             UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
@@ -57,30 +54,32 @@ public class getPostList extends HttpServlet {
                 limits = userGroupMapper.selectUserLimits(user.getUgid());
             }
         }
-        if (limits>=postClassMapper.selectPostClassLimits(pcid)){
-        if (pcid != null) {
-            PostMapper postMapper = sqlSession.getMapper(PostMapper.class);
-            List<Posts> posts = postMapper.selectpostList(pcid);
-            if (posts != null && !posts.isEmpty()) {
-                String postList = JSON.toJSONString(posts);
-                writer.print(postList);
+        PostMapper postMapper = sqlSession.getMapper(PostMapper.class);
+        Integer pid = Integer.valueOf(request.getParameter("pid"));
+        Posts post=postMapper.selectPostContent(pid);
+        PostClassMapper postClassMapper = sqlSession.getMapper(PostClassMapper.class);
+        Integer pcid = post.getPcid();
+        Reply emptyReply = new Reply();
+        List<Reply> emptyReplyList = new ArrayList<>();
+        if (limits >= postClassMapper.selectPostClassLimits(pcid)) {
+            if (pcid != null) {
+                System.out.println(4);
+                Integer start = (page-1)*10;
+                List<Reply> replyList = replyMapper.replyList(start,pid);
+                String replyListString = JSON.toJSONString(replyList);
+                System.out.println(replyListString);
+                writer.print(replyListString);
             } else {
-                emptyPost.setTitle("版区没有任何帖子");
-                emptyPostList.add(emptyPost);
-                String emptyPostListString = JSON.toJSONString(emptyPostList);
-                writer.print(emptyPostListString);
+                emptyReply.setContent("主题不存在");
+                emptyReplyList.add(emptyReply);
+                String emptyReplyListString = JSON.toJSONString(emptyReplyList);
+                writer.print(emptyReplyListString);
             }
         } else {
-            emptyPost.setTitle("不存在的版区");
-            emptyPostList.add(emptyPost);
-            String emptyPostListString = JSON.toJSONString(emptyPostList);
-            writer.print(emptyPostListString);
-        }
-        }else {
-            emptyPost.setTitle("访问权限不足");
-            emptyPostList.add(emptyPost);
-            String emptyPostListString = JSON.toJSONString(emptyPostList);
-            writer.print(emptyPostListString);
+            emptyReply.setContent("访问权限不足");
+            emptyReplyList.add(emptyReply);
+            String emptyReplyListString = JSON.toJSONString(emptyReplyList);
+            writer.print(emptyReplyListString);
         }
         sqlSession.close();
         writer.flush();

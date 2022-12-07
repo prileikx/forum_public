@@ -6,6 +6,24 @@ public class Reply {
     private Integer uid;
     private String content;
     private String sendtime;
+    private String username;
+    private String img;
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getImg() {
+        return img;
+    }
+
+    public void setImg(String img) {
+        this.img = img;
+    }
 
     @Override
     public String toString() {

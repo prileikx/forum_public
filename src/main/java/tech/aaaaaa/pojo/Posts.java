@@ -9,23 +9,33 @@ public class Posts {
     private Integer replycount;
     private String edittime;
     private Integer edituid;
-    private Integer Integerpcid;
+    private Integer pcid;
     private String content;
+    private String username;
+    private String img;
 
-    @Override
-    public String toString() {
-        return "Posts{" +
-                "pid=" + pid +
-                ", uid=" + uid +
-                ", title='" + title + '\'' +
-                ", sendtime='" + sendtime + '\'' +
-                ", viewcount=" + viewcount +
-                ", replycount=" + replycount +
-                ", edittime='" + edittime + '\'' +
-                ", edituid=" + edituid +
-                ", Integerpcid=" + Integerpcid +
-                ", content='" + content + '\'' +
-                '}';
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getImg() {
+        return img;
+    }
+
+    public void setImg(String img) {
+        this.img = img;
+    }
+
+    public Integer getPcid() {
+        return pcid;
+    }
+
+    public void setPcid(Integer pcid) {
+        this.pcid = pcid;
     }
 
     public Integer getPid() {
@@ -92,13 +102,7 @@ public class Posts {
         this.edituid = edituid;
     }
 
-    public Integer getIntegerpcid() {
-        return Integerpcid;
-    }
 
-    public void setIntegerpcid(Integer integerpcid) {
-        Integerpcid = integerpcid;
-    }
 
     public String getContent() {
         return content;

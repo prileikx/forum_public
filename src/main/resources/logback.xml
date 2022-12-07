@@ -6,11 +6,13 @@
     <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>[%level] %blue(%d{HH:mm:ss.SSS}) %cyan([%thread]) %boldGreen(%logger{15}) - %msg %n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
     </appender>
 
     <logger name="tech.aaaaaa" level="DEBUG" additivity="false">
         <appender-ref ref="Console"/>
+        <charset>UTF-8</charset>
     </logger>
 
 
@@ -22,5 +24,6 @@
       -->
     <root level="DEBUG">
         <appender-ref ref="Console"/>
+        <charset>UTF-8</charset>
     </root>
 </configuration>
