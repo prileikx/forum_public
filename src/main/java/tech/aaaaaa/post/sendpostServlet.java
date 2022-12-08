@@ -42,7 +42,7 @@ public class sendpostServlet extends HttpServlet {
             sqlSession.close();
             return;
         }
-        String title = request.getParameter("titile");
+        String title = request.getParameter("title");
         Integer pcid = Integer.valueOf(request.getParameter("pcid"));
         String content = request.getParameter("content");
         UserMapper userMapper = sqlSession.getMapper(UserMapper.class);

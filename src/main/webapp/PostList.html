@@ -7,20 +7,30 @@
     <script src="/js/jquery-3.0.0.js"></script>
     <script src="/js/sweetalert2.all.min.js"></script>
     <script src="/js/sha1.min.js"></script>
+    <script src="/js/jq-paginator.min.js"></script>
+    <script src="/js/tinymce/tinymce.min.js"></script>
     <link rel="stylesheet" href="/css/picnic.css">
     <style>
-        #postclasslist{
+        #postclasslist {
             text-align: left;
         }
-        .postclassdiv{
+
+        .postclassdiv {
             border: #aaaaaa solid 1px;
         }
-        #postclassimg{
+
+        #postclassimg {
             width: 300px;
-            margin-top:10px;
+            margin-top: 10px;
         }
-        .postremarks{
+
+        .postremarks {
             font-size: 10px;
+        }
+
+        .tox-tinymce {
+            border: 0 solid #fff !important;
+            border-radius: unset !important;
         }
     </style>
     <title>版区</title>
@@ -53,6 +63,13 @@
                     </a>
                 </div>
             </div>
+            <nav aria-label="Page navigation">
+                <ul class="pagination"></ul>
+                <div id="pageshow"></div>
+            </nav>
+            <input type="text" id="newposttitle"  v-model="title" placeholder="输入标题,5-50个字之间" minlength="5" maxlength="50" style="margin-left: 10px;margin-bottom: 10px">
+            <textarea id="tinydemo" style="margin-left: 10px;" placeholder="输入帖子内容,最少五个字符" minlength="5"></textarea>
+            <button id="newpost" style="margin-left: 10px" @click="sendpost" class="success">发送帖子</button>
         </div>
     </div>
     <div style="min-height: 300px;background-color:rgba(255,255,255,0.8);display: inline-block;margin-top: 10px;float: right;width: 300px;margin-left: 10px;text-align: left;">
@@ -67,29 +84,113 @@
     </div>
 </div>
 <script>
+    URL = document.URL
+    resourceposition = URL.indexOf("PostClass");
+    resourceposition = resourceposition + 10
+    resourcepositionend = URL.indexOf("?");
+    postclass = URL.substring(resourceposition,resourcepositionend)
+    sendurl = "/getPostList/" + postclass
+    pagepos = URL.indexOf("page=");
+    page = URL.substring(pagepos + 5)
+    totalcount=1;
+    $(document).ready(function () {
+        axios({
+            method: "post",
+            url: "/getpostcountServlet?postclass="+postclass
+        }).then(function (resp) {
+            totalcount=resp.data.totalcount
+            console.log(totalcount)
+            console.log(resp.data.totalcount)
+        })
+        console.log(totalcount)
+        $('.pagination').jqPaginator({
+            totalCounts: totalcount,
+            pageSize: 10,
+            visiblePages: 10,
+            currentPage: page,
+            onPageChange: function (num, type) {
+                window.location.href="/PostClass/"+postclass+"?page="+num
+            }
+        });
+    })
+
     const {createApp} = Vue
     createApp({
         data() {
             return {
-                postlist: []
+                postlist: [],
+                title:"",
             }
         },
         mounted() {
-            URL = document.URL
-            resourceposition = URL.indexOf("PostClass");
-            resourceposition = resourceposition+10
-            postclass = URL.substring(resourceposition)
-            sendurl = "/getPostList/"+postclass
             var _this = this;
             axios({
                 method: "post",
-                url: sendurl
+                url: sendurl+"?page="+page
             }).then(function (resp) {
                 _this.postlist = resp.data
-                console.log(resp.data)
             })
+        },
+        methods:{
+            sendpost:function () {
+                if (this.title.length<5){
+                    Swal.fire({
+                        icon: 'error',
+                        title: "标题长度不得少于5个字符",
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }
+                else if (tinyMCE.activeEditor.getContent().length<5){
+                    Swal.fire({
+                        icon: 'error',
+                        title: "帖子内容不得少于5个字符",
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }
+                else {
+                    axios({
+                        method: "post",
+                        url: "/sendpostServlet",
+                        data:"pcid="+this.postlist[0].pcid+"&title="+this.title+"&content="+tinyMCE.activeEditor.getContent()
+                    }).then(function (resp) {
+                        iconmark = 'error'
+                        if (resp.data.msg=="发送成功"){
+                            iconmark="success";
+                        }
+                        Swal.fire({
+                            icon: iconmark,
+                            title: resp.data.msg,
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                        if (resp.data.msg=="发送成功") {
+                            setTimeout("window.location.reload(true)", 1000);
+                        }
+                    })
+                }
+            }
         }
     }).mount('#postclasslist')
+    $(document).ready(function () {
+        $("#newpost").click(function () {
+            $("#testdiv").html(tinyMCE.activeEditor.getContent())
+            console.log(tinyMCE.activeEditor.getContent())
+        })
+        tinymce.init({
+            selector: '#tinydemo',
+            language: 'zh_CN',
+            plugins: 'preview searchreplace autolink directionality visualchars fullscreen image link media template code table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount emoticons autoresize',
+            toolbar: 'code forecolor backcolor bold italic underline strikethrough link image media | fontsize | font | alignleft aligncenter alignright lineheight | \
+                    bullist numlist  | blockquote subscript superscript removeformat | \
+                    table emoticons charmap pagebreak insertdatetime | fullscreen ',
+            menubar: false,
+            font_size_formats: '8px 10px 12px 14px 16px 18px 20px 24px 36px 48px 56px 72px',
+            autosave_ask_before_unload: false,
+            toolbar_drawer: false,
+        });
+    })
 </script>
 </body>
 </html>

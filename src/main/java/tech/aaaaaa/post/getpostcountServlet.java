@@ -19,20 +19,17 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-@WebServlet("/getPostList/*")
-public class getPostList extends HttpServlet {
+@WebServlet(name = "getpostcountServlet", value = "/getpostcountServlet")
+public class getpostcountServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json;charset=utf-8");
         SqlSessionFactory sqlSessionFactory = SqlSessionFactoryUtils.getSqlSessionFactory();
         SqlSession sqlSession = sqlSessionFactory.openSession(true);
         PrintWriter writer = response.getWriter();
-        String URI = request.getRequestURI();
-        String pcenglishname = URI.substring(13);
         PostClassMapper postClassMapper = sqlSession.getMapper(PostClassMapper.class);
-        Integer pcid = postClassMapper.selectpcid(pcenglishname);
-        List<Posts> emptyPostList = new ArrayList<>();
-        Posts emptyPost = new Posts();
+        String postclass = request.getParameter("postclass");
+        Integer pcid = postClassMapper.selectpcid(postclass);
         Cookie[] cookies = request.getCookies();
         String uid = null;
         String verifycode = null;
@@ -58,35 +55,20 @@ public class getPostList extends HttpServlet {
             }
         }
         if (limits>=postClassMapper.selectPostClassLimits(pcid)){
-        if (pcid != null) {
-            PostMapper postMapper = sqlSession.getMapper(PostMapper.class);
-            Integer page = Integer.valueOf(request.getParameter("page"));
-            if (page==null){
-                page=1;
-            }
-            Integer start = (page-1)*10;
-            List<Posts> posts = postMapper.selectpostList(pcid,start);
-            if (posts != null && !posts.isEmpty()) {
-                String postList = JSON.toJSONString(posts);
-                writer.print(postList);
+            if (pcid != null) {
+                PostMapper postMapper = sqlSession.getMapper(PostMapper.class);
+                Integer totalcount = postMapper.selectcountPost(pcid);
+                if (totalcount != null) {
+                    System.out.println("totalcount="+totalcount);
+                    writer.print("{\"totalcount\":\""+totalcount+"\"}");
+                } else {
+                    writer.print("{\"totalcount\":\""+1+"\"}");
+                }
             } else {
-                emptyPost.setTitle("版区没有任何帖子");
-                emptyPost.setPcid(pcid);
-                emptyPostList.add(emptyPost);
-                String emptyPostListString = JSON.toJSONString(emptyPostList);
-                writer.print(emptyPostListString);
+                writer.print("{\"totalcount\":\""+1+"\"}");
             }
-        } else {
-            emptyPost.setTitle("不存在的版区");
-            emptyPostList.add(emptyPost);
-            String emptyPostListString = JSON.toJSONString(emptyPostList);
-            writer.print(emptyPostListString);
-        }
         }else {
-            emptyPost.setTitle("访问权限不足");
-            emptyPostList.add(emptyPost);
-            String emptyPostListString = JSON.toJSONString(emptyPostList);
-            writer.print(emptyPostListString);
+            writer.print("{\"totalcount\":\""+1+"\"}");
         }
         sqlSession.close();
         writer.flush();
