@@ -14,4 +14,5 @@ public interface PostMapper {
      Posts selectPostContent(@Param("pid")Integer pid);
      //查询帖子数量
      Integer selectcountPost(@Param("pcid")Integer pcid);
+     Integer selectpcid(@Param("pid")Integer pid);
 }

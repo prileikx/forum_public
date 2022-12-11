@@ -11,7 +11,7 @@
     </insert>
     <select id="selectpostList" resultType="tech.aaaaaa.pojo.Posts">
         select *
-        from posts where pcid=#{pcid} limit #{start},10;
+        from posts where pcid=#{pcid} order by pid desc limit #{start},10;
     </select>
     <select id="selectPostContent" resultType="tech.aaaaaa.pojo.Posts">
         select posts.*,user.username,user.img
@@ -20,5 +20,9 @@
     <select id="selectcountPost" resultType="java.lang.Integer">
         select count(*)
         from posts where pcid=#{pcid};
+    </select>
+    <select id="selectpcid" resultType="java.lang.Integer">
+        select pcid
+        from posts where pid=#{pid};
     </select>
 </mapper>

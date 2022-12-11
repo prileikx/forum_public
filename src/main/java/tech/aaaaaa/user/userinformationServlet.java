@@ -41,11 +41,22 @@ public class userinformationServlet extends HttpServlet {
                 }
             }
         }
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
         if (uid == null || verifycode == null) {
-            return;
+            User user = userMapper.selectuserbyuid(Integer.valueOf(reuid));
+            user.setEmail("not show");
+            user.setVerify("not show");
+            user.setUpassword("not show");
+            String userjson = JSON.toJSONString(user);
+            writer.print(userjson);
         } else {
-            UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
             User user = userMapper.selectuser(Integer.parseInt(reuid), verifycode);
+            if (user == null){
+                user = userMapper.selectuserbyuid(Integer.valueOf(reuid));
+                user.setEmail("not show");
+            }
+            user.setVerify("not show");
+            user.setUpassword("not show");
             String userjson = JSON.toJSONString(user);
             writer.print(userjson);
         }

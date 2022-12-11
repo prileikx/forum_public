@@ -11,6 +11,22 @@
     <link rel="stylesheet" href="/css/flickity.css">
     <link rel="stylesheet" href="/css/picnic.css">
     <title>用户信息</title>
+    <style>
+        #usertable tbody tr td {
+            background-color: rgba(255, 255, 255, 0);
+            line-height: 30px;
+        }
+
+        .usertable tbody tr {
+            background-color: rgba(255, 255, 255, 0);
+        }
+        .usersetchangebtn td button{
+            background-color: #ddd;
+            color: black;
+            margin-left: 10px;
+            width: 270px;
+        }
+    </style>
 </head>
 <body>
 <div id="header"></div>
@@ -19,82 +35,246 @@
         $("#header").load("/header.html")
     })
 </script>
-<div style="width: 980px;margin: 0 auto">
-    <el-row>
-        <el-col :span="24">
-            <div class="grid-content" style="background-color:rgba(255,255,255,0.8);">
-            <table id="userinformation">
-                <tr>
-                    <td>
-                        头像:
-                        <img :src="'/resource/img/upload/'+user.img" style="width: 100px;height: 100px;" >
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        uid:{{user.uid}}
-                    </td>
-                    <td>
-                        邮箱状态:{{user.ifconfirmemail}}
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        用户名:{{user.username}}
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        简介:{{user.describes}}
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        用户组:{{usergroup.usergroup}}
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        发帖数:{{user.postcount}}
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        回复数:{{user.replycount}}
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        注册时间:{{user.registertime}}
-                    </td>
-                </tr>
-            </table>
-            </div>
-        </el-col>
-    </el-row>
+<div style="width: 1190px;margin: 0 auto;margin-top: 10px" id="userinformation">
+    <div class="grid-content" style="background-color:rgba(255,255,255,0.8);">
+        <table>
+            <tr class="usersetchangebtn">
+                <td colspan="2">
+                    <button id="userinfobtn">
+                        用户信息
+                    </button>
+                    <button id="usersetbtn">
+                        用户设置
+                    </button>
+                    <button id="collectbtn">
+                        用户收藏
+                    </button>
+                    <button id="msgbtn">
+                        用户消息
+                    </button>
+                </td>
+            </tr>
+        </table>
+        <table class="usertable" id="basictable" style="margin: 10px">
+            <tr>
+                <td>
+                    头像:
+                    <img :src="'/resource/img/upload/'+user.img" style="width: 100px;height: 100px;">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    uid:{{user.uid}}
+                </td>
+                <td>
+                    邮箱状态:{{user.ifconfirmemail}}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    用户名:{{user.username}}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    简介:{{user.describes}}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    用户组:{{usergroup.usergroup}}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    发帖数:{{user.postcount}}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    回复数:{{user.replycount}}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    注册时间:{{user.registertime}}
+                </td>
+            </tr>
+        </table>
+        <table class="usertable" id="setpage" style="margin: 10px" hidden>
+            <tr>
+                <td>
+                    头像:
+                    <img :src="'/resource/img/upload/'+user.img" style="width: 100px;height: 100px;">
+                </td>
+                <td>
+                    <button class="setbtn" id="changeiconbtn">
+                        修改头像
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    邮箱:{{user.email}}
+                </td>
+                <td>
+                    <button class="setbtn" id="changeemailbtn">
+                        修改邮箱
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    密码:
+                </td>
+                <td>
+                    <button class="setbtn" id="changepasswordbtn">
+                        修改密码
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    用户名:{{user.username}}
+                </td>
+                <td>
+                    <button class="setbtn" id="changeusernamebtn">
+                        修改用户名
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    简介:{{user.describes}}
+                </td>
+                <td>
+                    <button class="setbtn" id="changedescribebtn">
+                        修改简介
+                    </button>
+                </td>
+            </tr>
+        </table>
+        <table id="collecttable" hidden>
+            <tr>
+                <td>222</td>
+            </tr>
+        </table>
+        <table id="msgtable" hidden>
+            <tr>
+                <td>111</td>
+            </tr>
+        </table>
+    </div>
 
 </div>
 
 <script>
+    $(document).ready(function (){
+        $("#userinfobtn").click(function () {
+            $("#setpage").hide()
+            $("#collecttable").hide()
+            $("#msgtable").hide()
+            $("#basictable").show()
+        })
+        $("#usersetbtn").click(function () {
+            $("#collecttable").hide()
+            $("#msgtable").hide()
+            $("#basictable").hide()
+            $("#setpage").show()
+        })
+        $("#collectbtn").click(function () {
+            $("#msgtable").hide()
+            $("#basictable").hide()
+            $("#setpage").hide()
+            $("#collecttable").show()
+        })
+        $("#msgbtn").click(function () {
+            $("#collecttable").hide()
+            $("#basictable").hide()
+            $("#setpage").hide()
+            $("#msgtable").show()
+        })
+        $("#changeemailbtn").click(function (){
+            Swal.fire({
+                title: '修改用户名',
+                html: `
+            <form method="post" id="up1">
+            <label>输入密码:
+            <input type="password" name="password_confirm" id="password_confirm" form="up1">
+            </label>
+            <label>输入邮箱:
+            <input type="text" name="change_uname_text" id="change_email_text" form="up1">
+            </label>
+            </form>
+            `,
+                showCancelButton: true,
+                showConfirmButton: true,
+                confirmButtonText: '修改',
+                cancelButtonText: "取消",
+                preConfirm: function () {
+                    return new Promise((resolve, reject) => {
+                        resolve({
+                            password: $("#password_confirm").val(),
+                            email: $("#change_email_text").val()
+                        })
+                    })
+                },
+            }).then((res) => {
+                if (res.value) {
+                    axios({
+                        method: "POST",
+                        url: "/changeemailServlet",
+                        data: "email=" + $("#change_email_text").val()+"&password="+sha1($("#password_confirm").val())
+                    }).then(function (response) {
+                        console.log(response.data.msg)
+                        if (response.data.msg=="修改成功") {
+                            setTimeout("location.reload(true)", 1000)
+                            Swal.fire(
+                                {
+                                    type: 'success',
+                                    icon: 'success',
+                                    title: response.data.msg,
+                                    showConfirmButton: false,
+                                    timer: 2000
+                                }
+                            )
+                        } else {
+                            Swal.fire(
+                                {
+                                    type: 'error',
+                                    icon: 'error',
+                                    title: response.data.msg,
+                                    showConfirmButton: false,
+                                    timer: 2000
+                                }
+                            )
+                        }
+                    })
+                }
+            })
+        })
+    })
     const {createApp} = Vue
     createApp({
         data() {
             return {
                 user: [],
-                usergroup:[]
+                usergroup: [],
+                chakan: "msg",
             }
         },
         mounted() {
             var _this = this;
             URL = document.URL
             resourceposition = URL.indexOf("msg");
-            resourceposition = resourceposition+4
+            resourceposition = resourceposition + 4
             postclass = URL.substring(resourceposition)
             axios({
                 method: "post",
-                url: "/userinformationServlet?reuid="+postclass
+                url: "/userinformationServlet?reuid=" + postclass
             }).then(function (resp) {
                 _this.user = resp.data
+                console.log(resp.data)
                 if (_this.user.ifconfirmemail == 1) {
                     _this.user.ifconfirmemail = "已验证"
                 } else {
@@ -103,7 +283,7 @@
             })
             axios({
                 method: "post",
-                url: "/usergroupServlet?reuid="+postclass
+                url: "/usergroupServlet?reuid=" + postclass
             }).then(function (resp) {
                 _this.usergroup = resp.data
                 console.log(resp.data)

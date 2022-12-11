@@ -18,6 +18,36 @@
         set img = #{img}
         where uid=#{uid};
     </update>
+    <update id="updatpostecount">
+        update user
+        set postcount = postcount+1
+        where uid=#{uid};
+    </update>
+    <update id="updatereplycount">
+        update user
+        set replycount = replycount+1
+        where uid=#{uid};
+    </update>
+    <update id="updateemail">
+        update user
+        set email = #{email}
+        where uid=#{uid};
+    </update>
+    <update id="updatepassword">
+        update user
+        set upassword = #{password}
+        where uid=#{uid};
+    </update>
+    <update id="updateusername">
+        update user
+        set username = #{username}
+        where uid=#{uid};
+    </update>
+    <update id="updatedescribe">
+        update user
+        set describes = #{describe}
+        where uid=#{uid};
+    </update>
     <select id="checkUserEmailIfWasRegister" resultType="java.lang.Integer">
         select count(*)
         from user
@@ -46,5 +76,10 @@
         select ugid
         from user where uid=#{reuid};
     </select>
+    <select id="selectuserbyuid" resultType="tech.aaaaaa.pojo.User">
+        select *
+        from user where uid = #{uid};
+    </select>
+
 
 </mapper>

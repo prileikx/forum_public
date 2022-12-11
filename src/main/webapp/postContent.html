@@ -6,13 +6,55 @@
     <script src="/js/axios.min.js"></script>
     <script src="/js/jquery-3.0.0.js"></script>
     <script src="/js/sweetalert2.all.min.js"></script>
-    <script src="/js/sha1.min.js"></script>
+    <script src="/js/jq-paginator.min.js"></script>
     <script src="/js/flickity.pkgd.min.js"></script>
     <script src="/js/tinymce/tinymce.min.js"></script>
     <link rel="stylesheet" href="/css/flickity.css">
     <link rel="stylesheet" href="/css/picnic.css">
+    <script src="/js/postcontent.js"></script>
     <title>帖子详情</title>
     <style>
+        .active > a {
+            background-color: #ddd !important;
+        }
+
+        .disabled {
+            cursor: not-allowed !important;
+            pointer-events: none !important;
+        }
+
+        .disabled a {
+            color: #aaaaaa !important;
+        }
+
+        li {
+            list-style: none;
+            user-select: none;
+        }
+
+        .pagination > li > a:focus, .pagination > li > a:hover, .pagination > li > a > span:focus, .pagination > li > span:hover {
+            z-index: 2;
+            color: #23527c;
+            background-color: #aaa;
+            border-color: #ddd;
+        }
+
+        .pagination > li {
+            display: inline;
+        }
+
+        .pagination > li > a, .pagination > li > span {
+            position: relative;
+            float: left;
+            padding: 6px 12px;
+            margin-left: 1px;
+            line-height: 1.42;
+            color: #337ab7;
+            text-decoration: none;
+            background-color: #fff;
+            border: 1px solid #ddd;
+        }
+
         #postclasslist {
             text-align: left;
         }
@@ -30,6 +72,13 @@
             background-color: rgba(255, 255, 255, 0.8);
             margin: 0.6em;
             border: #aaaaaa solid 1px;
+        }
+
+        .tox-tinymce {
+            border: 0 solid #fff !important;
+            border-radius: unset !important;
+            margin-left: 10px !important;
+            margin-top: 10px !important;
         }
     </style>
 </head>
@@ -50,7 +99,7 @@
                     </div>
                 </div>
             </div>
-            <div class="eachpost" style="position: relative;min-height: 150px" v-if="page==1">
+            <div class="eachpost" style="min-height: 150px" v-if="page==1">
                 <div style="width: 100px;height: 134px;display: inline-block;margin-left: 10px;margin-right: 0;margin-top: 10px;margin-bottom: auto;float:left;">
                     <div>
                         <img :src="'/resource/img/upload/'+post.img" style="width: 100px;height: 100px;">
@@ -62,7 +111,7 @@
                 <div style="display: inline-block;margin: 10px;margin-left: 0px;width: 1000px;height: 100%;">
                     <div class="postclassdiv">
                         <div style="margin-left: 10px;float: top">
-                            {{post.content}}
+                            <p v-html="post.content"></p>
                         </div>
                         <div class="postremarks" style="margin: 10px;">
                             <p>
@@ -86,7 +135,7 @@
                     </div>
                     <div class="postclassdiv">
                         <div>
-                            <p style="margin: 10px"> {{r.content}}</p>
+                            <p style="margin: 10px" v-html="r.content"> </p>
                         </div>
                         <div class="postremarks" style="margin: 10px">
                             <p>
@@ -96,7 +145,11 @@
                     </div>
                 </div>
             </div>
-
+            <ul class="pagination" style="height: 40px"></ul>
+            <textarea id="tinydemo" style="width: 1169px" placeholder="输入帖子内容,最少五个字符"
+                      minlength="5"></textarea>
+            <button id="newreply" style="margin-left: 10px;width: 1169px" @click="sendreply" class="success">发送帖子
+            </button>
         </div>
     </div>
 </div>
@@ -107,7 +160,7 @@
             return {
                 post: [],
                 replylist: [],
-                page:0,
+                page: 0,
             }
         },
         mounted() {
@@ -117,7 +170,7 @@
             resourcepositionend = URL.indexOf("?");
             pagepos = URL.indexOf("page=");
             page = URL.substring(pagepos + 5)
-            this.page=page
+            this.page = page
             resourcepositionend = resourcepositionend
             pid = URL.substring(resourcepositionstart, resourcepositionend)
             sendurl = "/getPostContentServlet/" + pid + '?page=' + page
@@ -137,8 +190,55 @@
                 _this.replylist = resp.data
                 console.log(resp.data)
             })
+        },
+        methods: {
+            sendreply: function () {
+                if (tinyMCE.activeEditor.getContent().length < 5) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: "帖子内容不得少于5个字符",
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                } else {
+                    axios({
+                        method: "post",
+                        url: "/sendreplyServlet",
+                        data: "pid=" + this.post.pid + "&content=" + tinyMCE.activeEditor.getContent()
+                    }).then(function (resp) {
+                        iconmark = 'error'
+                        if (resp.data.msg == "发送成功") {
+                            iconmark = "success";
+                        }
+                        Swal.fire({
+                            icon: iconmark,
+                            title: resp.data.msg,
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                        if (resp.data.msg == "发送成功") {
+                            setTimeout("window.location.reload(true)", 1000);
+                        }
+                    })
+                }
+            }
         }
     }).mount('#postclasslist')
+    $("#newreply").click(function () {
+        $("#testdiv").html(tinyMCE.activeEditor.getContent())
+    })
+    tinymce.init({
+        selector: '#tinydemo',
+        language: 'zh_CN',
+        plugins: 'preview searchreplace autolink directionality visualchars fullscreen image link media template code table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount emoticons autoresize',
+        toolbar: 'code forecolor backcolor bold italic underline strikethrough link image media | fontsize | font | alignleft aligncenter alignright lineheight | \
+                    bullist numlist  | blockquote subscript superscript removeformat | \
+                    table emoticons charmap pagebreak insertdatetime | fullscreen ',
+        menubar: false,
+        font_size_formats: '8px 10px 12px 14px 16px 18px 20px 24px 36px 48px 56px 72px',
+        autosave_ask_before_unload: false,
+        toolbar_drawer: false,
+    });
 </script>
 </body>
 </html>

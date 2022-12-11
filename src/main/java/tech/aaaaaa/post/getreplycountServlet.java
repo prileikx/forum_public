@@ -1,13 +1,9 @@
 package tech.aaaaaa.post;
 
-import com.alibaba.fastjson.JSON;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
-import tech.aaaaaa.mapper.PostClassMapper;
-import tech.aaaaaa.mapper.PostMapper;
-import tech.aaaaaa.mapper.UserGroupMapper;
-import tech.aaaaaa.mapper.UserMapper;
-import tech.aaaaaa.pojo.Posts;
+import tech.aaaaaa.mapper.*;
+import tech.aaaaaa.pojo.Reply;
 import tech.aaaaaa.pojo.User;
 import tech.aaaaaa.util.SqlSessionFactoryUtils;
 
@@ -16,11 +12,9 @@ import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
 
-@WebServlet(name = "getpostcountServlet", value = "/getpostcountServlet")
-public class getpostcountServlet extends HttpServlet {
+@WebServlet(name = "getreplycountServlet", value = "/getreplycountServlet")
+public class getreplycountServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json;charset=utf-8");
@@ -28,8 +22,9 @@ public class getpostcountServlet extends HttpServlet {
         SqlSession sqlSession = sqlSessionFactory.openSession(true);
         PrintWriter writer = response.getWriter();
         PostClassMapper postClassMapper = sqlSession.getMapper(PostClassMapper.class);
-        String postclass = request.getParameter("postclass");
-        Integer pcid = postClassMapper.selectpcid(postclass);
+        Integer pid = Integer.valueOf(request.getParameter("pid"));
+        PostMapper postMapper=sqlSession.getMapper(PostMapper.class);
+        Integer pcid = postMapper.selectpcid(pid);
         Cookie[] cookies = request.getCookies();
         String uid = null;
         String verifycode = null;
@@ -56,8 +51,8 @@ public class getpostcountServlet extends HttpServlet {
         }
         if (limits>=postClassMapper.selectPostClassLimits(pcid)){
             if (pcid != null) {
-                PostMapper postMapper = sqlSession.getMapper(PostMapper.class);
-                Integer totalcount = postMapper.selectcountPost(pcid);
+                ReplyMapper replyMapper = sqlSession.getMapper(ReplyMapper.class);
+                Integer totalcount = replyMapper.selectreplycount(pid);
                 if (totalcount != null) {
                     if (totalcount==0){
                         totalcount=1;
