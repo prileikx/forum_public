@@ -112,7 +112,6 @@ public class uploadServlet extends HttpServlet {
                         if (fileItem.isFormField()) {
                             String name = fileItem.getFieldName();//获取表单控件的名字
                             String value = fileItem.getString("UTF-8");//获取值,处理乱码
-                            System.out.println(name + ": " + value);
                         } else {//文件
                             String uploadFileName = fileItem.getName();//获取上传文件名字(带路径)
                             //可能存在文件名不合法的情况
@@ -129,10 +128,9 @@ public class uploadServlet extends HttpServlet {
                             //JNI= java native Interface
                             //implements Serializable : 标记接口 , JVM-->java栈 本地方法栈 native -->C++
 
-                            response.getWriter().print(FileName);
+                            writer.print("上传成功,请返回主页查看,文件名:"+FileName);
                             //可以使用UUID(唯一标识的通用码),保证文件名唯一
                             String uuidPath = UUID.randomUUID().toString();//生成一共随机的uuid
-                            System.out.println(uuidPath);
 
                             //==========================创建存放目录========================//
                             String realPath = uploadPath + "/" + uuidPath;

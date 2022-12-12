@@ -4,17 +4,17 @@ public class Collect {
     private Integer cid;
     private Integer uid;
     private Integer pid;
-    private String datetime;
+    private String title;
 
-    @Override
-    public String toString() {
-        return "Collect{" +
-                "cid=" + cid +
-                ", uid=" + uid +
-                ", pid=" + pid +
-                ", datetime='" + datetime + '\'' +
-                '}';
+    public String getTitle() {
+        return title;
     }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    private String datetime;
 
     public Integer getCid() {
         return cid;

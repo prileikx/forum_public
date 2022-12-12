@@ -3,6 +3,7 @@ package tech.aaaaaa.mapper;
 import org.apache.ibatis.annotations.Param;
 import tech.aaaaaa.pojo.User;
 
+import javax.swing.*;
 import java.util.List;
 
 public interface UserMapper {
@@ -32,4 +33,6 @@ public interface UserMapper {
     void updateusername(@Param("uid")Integer uid,@Param("username")String username);
     //修改简介
     void updatedescribe(@Param("uid")Integer uid,@Param("describe")String describe);
+    //修改密码后删除verify
+    void updateverify(@Param("uid")Integer uid);
 }

@@ -1,11 +1,10 @@
-package tech.aaaaaa.post;
+package tech.aaaaaa.collect;
 
+import com.alibaba.fastjson.JSON;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
-import tech.aaaaaa.mapper.PostClassMapper;
-import tech.aaaaaa.mapper.PostMapper;
-import tech.aaaaaa.mapper.UserGroupMapper;
-import tech.aaaaaa.mapper.UserMapper;
+import tech.aaaaaa.mapper.*;
+import tech.aaaaaa.pojo.Collect;
 import tech.aaaaaa.pojo.User;
 import tech.aaaaaa.util.SqlSessionFactoryUtils;
 
@@ -14,9 +13,11 @@ import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
-@WebServlet(name = "sendpostServlet", value = "/sendpostServlet")
-public class sendpostServlet extends HttpServlet {
+@WebServlet(name = "getusercollectServlet", value = "/getusercollectServlet")
+public class getusercollectServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json;charset=utf-8");
@@ -27,6 +28,9 @@ public class sendpostServlet extends HttpServlet {
         Cookie[] cookies = request.getCookies();
         String uid = null;
         String verifycode = null;
+        List<Collect> emptycollectlist = new ArrayList<>();
+        Collect emptycollect = new Collect();
+        String emtpycollectjson = "";
         if(cookies!=null){
             for (Cookie cookie:cookies){
                 String name = cookie.getName();
@@ -38,29 +42,38 @@ public class sendpostServlet extends HttpServlet {
             }
         }else
         {
-            writer.print("{\"msg\":\"登陆状态错误,请重新登录\"}");
+            emptycollect.setTitle("登陆状态错误,请重新登录");
+            emptycollectlist.add(emptycollect);
+            emtpycollectjson = JSON.toJSONString(emptycollectlist);
+            writer.print(emtpycollectjson);
             sqlSession.close();
+            writer.flush();
+            writer.close();
             return;
         }
-        String title = request.getParameter("title");
-        Integer pcid = Integer.valueOf(request.getParameter("pcid"));
-        String content = request.getParameter("content");
         UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
         User user = userMapper.selectuser(Integer.valueOf(uid),verifycode);
         if (user == null){
-            writer.print("{\"msg\":\"登录状态错误,请重新登录\"}");
+            emptycollect.setTitle("登陆状态错误,请重新登录");
+            emptycollectlist.add(emptycollect);
+            emtpycollectjson = JSON.toJSONString(emptycollectlist);
+            writer.print(emtpycollectjson);
         }
         else{
-            PostClassMapper postClassMapper = sqlSession.getMapper(PostClassMapper.class);
-            UserGroupMapper userGroupMapper = sqlSession.getMapper(UserGroupMapper.class);
-            //检查用户权限是否大于等于版区权限
-            if (userGroupMapper.selectUserLimits(user.getUgid())>=postClassMapper.selectPostClassLimits(pcid)){
-                postMapper.insertpost(Integer.valueOf(uid),title,Integer.valueOf(pcid),content);
-                userMapper.updatpostecount(Integer.valueOf(uid));
-                writer.print("{\"msg\":\"发送成功\"}");
+            CollectMapper collectMapper = sqlSession.getMapper(CollectMapper.class);
+            Integer page = Integer.valueOf(request.getParameter("page"));
+            if (page == null){
+                page=1;
             }
-            else {
-                writer.print("{\"msg\":\"用户权限不足\"}");
+            List<Collect> collects = collectMapper.selectrusercollect(Integer.valueOf(uid),(page-1)*10);
+            if(collects==null||collects.isEmpty()){
+                emptycollect.setTitle("您未收藏任何帖子哦~");
+                emptycollectlist.add(emptycollect);
+                emtpycollectjson = JSON.toJSONString(emptycollectlist);
+                writer.print(emtpycollectjson);
+            }else {
+            String collectjson = JSON.toJSONString(collects);
+            writer.print(collectjson);
             }
         }
         sqlSession.close();

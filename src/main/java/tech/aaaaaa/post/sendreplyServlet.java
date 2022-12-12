@@ -35,7 +35,7 @@ public class sendreplyServlet extends HttpServlet {
             }
         }else
         {
-            writer.print("{\"msg\":\"登陆状态错误,请重新登录\"}");
+            writer.print("{\"msg\":\"登录状态错误,请重新登录\"}");
             sqlSession.close();
             return;
         }
@@ -46,8 +46,6 @@ public class sendreplyServlet extends HttpServlet {
         User user = userMapper.selectuser(Integer.valueOf(uid),verifycode);
         if (user == null){
             writer.print("{\"msg\":\"登陆状态错误,请重新登录\"}");
-            sqlSession.close();
-            return;
         }
         else{
             PostClassMapper postClassMapper = sqlSession.getMapper(PostClassMapper.class);

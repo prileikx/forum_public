@@ -63,11 +63,9 @@ public class getReplyServlet extends HttpServlet {
         List<Reply> emptyReplyList = new ArrayList<>();
         if (limits >= postClassMapper.selectPostClassLimits(pcid)) {
             if (pcid != null) {
-                System.out.println(4);
                 Integer start = (page-1)*10;
                 List<Reply> replyList = replyMapper.replyList(start,pid);
                 String replyListString = JSON.toJSONString(replyList);
-                System.out.println(replyListString);
                 writer.print(replyListString);
             } else {
                 emptyReply.setContent("主题不存在");

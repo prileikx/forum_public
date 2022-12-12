@@ -42,8 +42,14 @@ public class changepasswordServlet extends HttpServlet {
                 String password = request.getParameter("password");
                 if(user.getUpassword().equals(password)){
                     String afpassword = request.getParameter("afpassword");
-                    userMapper.updatepassword(Integer.valueOf(uid),afpassword);
-                    writer.print("{\"msg\":\"修改成功\"}");
+                    if (afpassword.length()!=40){
+                        writer.print("{\"msg\":\"密码长度不正确,请刷新网页重新尝试\"}");
+                    }
+                    else {
+                        userMapper.updatepassword(Integer.valueOf(uid),afpassword);
+                        userMapper.updateverify(Integer.valueOf(uid));
+                        writer.print("{\"msg\":\"修改成功,请重新登录\"}");
+                    }
                 }else {
                     writer.print("{\"msg\":\"原密码输入错误,请重新输入\"}");
                 }

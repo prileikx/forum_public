@@ -48,6 +48,11 @@
         set describes = #{describe}
         where uid=#{uid};
     </update>
+    <update id="updateverify">
+        update user
+        set verify = null
+        where uid=#{uid};
+    </update>
     <select id="checkUserEmailIfWasRegister" resultType="java.lang.Integer">
         select count(*)
         from user

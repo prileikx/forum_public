@@ -139,13 +139,25 @@ $(document).ready(function () {
         else{
           $("#logregdiv").css('display','inline-block')
         }
+      }).catch(function (error) {
+        $.cookie("uid",null,{expires: -1,path: "/"})
+        $.cookie("verifycode",null,{expires: -1,path: "/"})
+        $("#logregdiv").css('display','inline-block')
       })
   $("#menuusername").click(function () {
     $("#menu").toggle(500)
   })
   $("#logout").click(function (){
-    $.cookie("uid",null,{expires: -1,path: "/"})
-    $.cookie("verifycode",null,{expires: -1,path: "/"})
+    axios({
+      method: "post",
+      url: "/logoutServlet"
+    }).then(function (resp) {
+      $.cookie("uid",null,{expires: -1,path: "/"})
+      $.cookie("verifycode",null,{expires: -1,path: "/"})
+    }).catch(function (error) {
+      $.cookie("uid",null,{expires: -1,path: "/"})
+      $.cookie("verifycode",null,{expires: -1,path: "/"})
+    })
     location.reload();
   })
   $("#apersonal").attr('href','/user/msg/'+$.cookie('uid'))

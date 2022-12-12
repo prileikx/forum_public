@@ -1,8 +1,12 @@
-package tech.aaaaaa.user;
+package tech.aaaaaa.collect;
 
+import com.alibaba.fastjson.JSON;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
+import tech.aaaaaa.mapper.CollectMapper;
+import tech.aaaaaa.mapper.PostMapper;
 import tech.aaaaaa.mapper.UserMapper;
+import tech.aaaaaa.pojo.Collect;
 import tech.aaaaaa.pojo.User;
 import tech.aaaaaa.util.SqlSessionFactoryUtils;
 
@@ -11,45 +15,47 @@ import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
-@WebServlet(name = "changeusernameServlet", value = "/changeusernameServlet")
-public class changeusernameServlet extends HttpServlet {
+@WebServlet(name = "getcollectcountServlet", value = "/getcollectcountServlet")
+public class getcollectcountServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json;charset=utf-8");
         SqlSessionFactory sqlSessionFactory = SqlSessionFactoryUtils.getSqlSessionFactory();
         SqlSession sqlSession = sqlSessionFactory.openSession(true);
         PrintWriter writer = response.getWriter();
+        PostMapper postMapper=sqlSession.getMapper(PostMapper.class);
         Cookie[] cookies = request.getCookies();
         String uid = null;
         String verifycode = null;
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
+        if(cookies!=null){
+            for (Cookie cookie:cookies){
                 String name = cookie.getName();
-                if (name.equals("uid")) {
+                if (name.equals("uid")){
                     uid = cookie.getValue();
                 } else if (name.equals("verifycode")) {
                     verifycode = cookie.getValue();
                 }
             }
+        }else
+        {
+            writer.print("{\"totalcount\":\""+1+"\"}");
+            sqlSession.close();
+            writer.flush();
+            writer.close();
+            return;
         }
-        if (uid == null || verifycode == null) {
-            writer.print("{\"msg\":\"用户登录状态验证错误,请重新登录\"}");
-        } else {
-            UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
-            User user = userMapper.selectuser(Integer.parseInt(uid), verifycode);
-            if (user != null) {
-                String username = request.getParameter("username");
-                if(userMapper.checkusernameifcanbeuse(username)==0){
-                    userMapper.updateusername(Integer.valueOf(uid),username);
-                    writer.print("{\"msg\":\"修改成功\"}");
-                }else{
-                    writer.print("{\"msg\":\"该用户名已被其他人注册,请重新命名\"}");
-                }
-
-            } else {
-                writer.print("{\"msg\":\"用户登录状态验证错误,请重新登录\"}");
-            }
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        User user = userMapper.selectuser(Integer.valueOf(uid),verifycode);
+        if (user == null){
+            writer.print("{\"totalcount\":\""+1+"\"}");
+        }
+        else{
+            CollectMapper collectMapper = sqlSession.getMapper(CollectMapper.class);
+            Integer totalcount = collectMapper.selectcollectcount(Integer.valueOf(uid));
+            writer.print("{\"totalcount\":\""+totalcount+"\"}");
         }
         sqlSession.close();
         writer.flush();
