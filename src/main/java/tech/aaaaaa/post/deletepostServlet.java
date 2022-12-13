@@ -2,6 +2,10 @@ package tech.aaaaaa.post;
 
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
+import tech.aaaaaa.mapper.*;
+import tech.aaaaaa.pojo.Posts;
+import tech.aaaaaa.pojo.Reply;
+import tech.aaaaaa.pojo.User;
 import tech.aaaaaa.util.SqlSessionFactoryUtils;
 
 import javax.servlet.*;
@@ -18,8 +22,43 @@ public class deletepostServlet extends HttpServlet {
         SqlSessionFactory sqlSessionFactory = SqlSessionFactoryUtils.getSqlSessionFactory();
         SqlSession sqlSession = sqlSessionFactory.openSession(true);
         PrintWriter writer = response.getWriter();
-
-        writer.print("{\"msg\":\"在这里输入提示性信息\"}");
+        PostMapper postMapper=sqlSession.getMapper(PostMapper.class);
+        Cookie[] cookies = request.getCookies();
+        String uid = null;
+        String verifycode = null;
+        if(cookies!=null){
+            for (Cookie cookie:cookies){
+                String name = cookie.getName();
+                if (name.equals("uid")){
+                    uid = cookie.getValue();
+                } else if (name.equals("verifycode")) {
+                    verifycode = cookie.getValue();
+                }
+            }
+        }else
+        {
+            writer.print("{\"msg\":\"登录状态错误,请重新登录\"}");
+            sqlSession.close();
+            return;
+        }
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        User user = userMapper.selectuser(Integer.valueOf(uid),verifycode);
+        if (user == null){
+            writer.print("{\"msg\":\"登陆状态错误,请重新登录\"}");
+        }
+        else{
+            PostClassMapper postClassMapper = sqlSession.getMapper(PostClassMapper.class);
+            UserGroupMapper userGroupMapper = sqlSession.getMapper(UserGroupMapper.class);
+            Integer pid = Integer.valueOf(request.getParameter("pid"));
+            Posts posts = postMapper.selectPostContent(pid);
+            if (userGroupMapper.selectUserLimits(user.getUgid())>=200 || user.getUid()==posts.getUid()){
+                postMapper.deletebypid(pid);
+                writer.print("{\"msg\":\"删除成功\"}");
+            }
+            else {
+                writer.print("{\"msg\":\"用户权限不足\"}");
+            }
+        }
         sqlSession.close();
         writer.flush();
         writer.close();

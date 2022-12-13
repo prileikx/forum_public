@@ -48,7 +48,6 @@ public class deletereplyServlet extends HttpServlet {
         else{
             PostClassMapper postClassMapper = sqlSession.getMapper(PostClassMapper.class);
             UserGroupMapper userGroupMapper = sqlSession.getMapper(UserGroupMapper.class);
-            //检查用户权限是否大于等于版区权限
             ReplyMapper replyMapper = sqlSession.getMapper(ReplyMapper.class);
             Integer rid = Integer.valueOf(request.getParameter("rid"));
             Reply reply = replyMapper.selectreplybyrid(rid);

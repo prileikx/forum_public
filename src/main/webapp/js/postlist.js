@@ -27,5 +27,5 @@ totalcount = 1;
                     window.location.href = "/PostClass/" + postclass + "?page=" + num
                 }
             }
-        });
+        })
     })

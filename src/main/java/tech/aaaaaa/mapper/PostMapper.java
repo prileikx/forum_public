@@ -15,4 +15,13 @@ public interface PostMapper {
      //查询帖子数量
      Integer selectcountPost(@Param("pcid")Integer pcid);
      Integer selectpcid(@Param("pid")Integer pid);
+     //根据pid删除帖子
+     Integer deletebypid(@Param("pid")Integer pid);
+     List<Posts> searchpostbycontent(@Param("searchcontent")String searchcontent,@Param("start")Integer start);
+     //计数
+     Integer searchpostcountbycontent(@Param("searchcontent")String searchcontent);
+     //增加查看数
+     Integer updateviewcount(@Param("pid")Integer pid);
+     //增加回复数
+     Integer updatereplycount(@Param("pid")Integer pid);
 }

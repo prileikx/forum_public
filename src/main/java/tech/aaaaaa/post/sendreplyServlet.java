@@ -39,7 +39,12 @@ public class sendreplyServlet extends HttpServlet {
             sqlSession.close();
             return;
         }
+        if (request.getParameter("pid").equals("undefined")){
+            writer.print("{\"msg\":\"回复的帖子不存在\"}");
+            return;
+        }
         Integer pid = Integer.valueOf(request.getParameter("pid"));
+        System.out.println("pid="+pid);
         Integer pcid = postMapper.selectpcid(pid);
         String content = request.getParameter("content");
         UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
@@ -60,6 +65,7 @@ public class sendreplyServlet extends HttpServlet {
                 ReplyMapper replyMapper = sqlSession.getMapper(ReplyMapper.class);
                 replyMapper.insertReply(pid,Integer.valueOf(uid),content);
                 userMapper.updatereplycount(Integer.valueOf(uid));
+                postMapper.updatereplycount(pid);
                 writer.print("{\"msg\":\"发送成功\"}");
             }
             else {

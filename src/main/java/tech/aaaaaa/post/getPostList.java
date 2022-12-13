@@ -78,12 +78,14 @@ public class getPostList extends HttpServlet {
             }
         } else {
             emptyPost.setTitle("不存在的版区");
+            emptyPost.setPcid(pcid);
             emptyPostList.add(emptyPost);
             String emptyPostListString = JSON.toJSONString(emptyPostList);
             writer.print(emptyPostListString);
         }
         }else {
             emptyPost.setTitle("访问权限不足");
+            emptyPost.setPcid(pcid);
             emptyPostList.add(emptyPost);
             String emptyPostListString = JSON.toJSONString(emptyPostList);
             writer.print(emptyPostListString);

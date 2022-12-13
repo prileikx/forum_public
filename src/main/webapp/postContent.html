@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="/css/flickity.css">
     <link rel="stylesheet" href="/css/picnic.css">
     <script src="/js/postcontent.js"></script>
-    <title>帖子详情</title>
     <style>
         .active > a {
             background-color: #ddd !important;
@@ -338,6 +337,7 @@
                 url: sendurl
             }).then(function (resp) {
                 _this.post = resp.data
+                document.title=resp.data.title
                 console.log(resp.data)
             })
             axios({
@@ -410,7 +410,7 @@
                         axios({
                             method: "POST",
                             url: "/deletepostServlet",
-                            data: "rid=" + _this.replylist[$(".deletereply").index(this)].rid
+                            data: "pid=" + _this.post.pid
                         }).then(function (response) {
                             console.log(response.data.msg)
                             if (response.data.msg == "删除成功") {

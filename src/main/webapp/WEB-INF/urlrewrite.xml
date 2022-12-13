@@ -40,6 +40,10 @@
         <from>^/postContent$</from>
         <to type="forward">/postContent.html</to>
     </rule>
+    <rule>
+        <from>^/search$</from>
+        <to type="forward">/search.html</to>
+    </rule>
     <outbound-rule>
         <note>
             The outbound-rule specifies that when response.encodeURL is called (if you are using JSTL c:url)

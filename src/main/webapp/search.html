@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <script src="/js/vue.global.js"></script>
+    <script src="/js/axios.min.js"></script>
+    <script src="/js/jquery-3.0.0.js"></script>
+    <script src="/js/sweetalert2.all.min.js"></script>
+    <script src="/js/sha1.min.js"></script>
+    <script src="/js/jq-paginator.min.js"></script>
+    <script src="/js/tinymce/tinymce.min.js"></script>
+    <link rel="stylesheet" href="/css/picnic.css">
+    <style>
+        .active>a{
+            background-color: #ddd!important;
+        }
+        .disabled{
+            cursor: not-allowed!important;
+            pointer-events: none!important;
+        }
+        .disabled a{
+            color: #aaaaaa!important;
+        }
+        li{
+            list-style: none;
+            user-select: none;
+        }
+        .pagination>li>a:focus,.pagination>li>a:hover,.pagination>li>a>span:focus,.pagination>li>span:hover{
+            z-index: 2;
+            color: #23527c;
+            background-color:#aaa;
+            border-color: #ddd;
+        }
+        .pagination>li{
+            display: inline;
+        }
+        .pagination>li>a,.pagination>li>span{
+            position: relative;
+            float: left;
+            padding: 6px 12px;
+            margin-left: 1px;
+            line-height: 1.42;
+            color: #337ab7;
+            text-decoration: none;
+            background-color: #fff;
+            border: 1px solid #ddd;
+        }
+
+        #postclasslist {
+            text-align: left;
+        }
+
+        .postclassdiv {
+            border: #aaaaaa solid 1px;
+        }
+
+        #postclassimg {
+            width: 300px;
+            margin-top: 10px;
+        }
+        .postremarks {
+            font-size: 10px;
+        }
+        #searchcontent{
+            width: 84%;
+            margin-left: 10px;
+        }
+        #searchbtn{
+            width: 15%;
+        }
+    </style>
+    <title>搜索</title>
+</head>
+<body>
+<div id="header"></div>
+<script>
+    $(document).ready(function () {
+        $("#header").load("/header.html")
+    })
+</script>
+
+<div style="width: 1190px;margin: 0 auto" id="postclasslist">
+    <div style="width: 1190px;display: inline-block;margin-top: 10px;">
+        <div class="flex one">
+            <input id="searchcontent">
+            <input type="button" value="搜索" id="searchbtn">
+            <div style="height: 10px;width: 1190px"></div>
+            <div v-for="post in postlist">
+                <div style="background-color:rgba(255,255,255,0.8);">
+                    <a :href="'/Posts/'+post.pid+'?page=1'" style="color: black;">
+                        <div class="postclassdiv">
+                            <div>
+                                <p>&nbsp;&nbsp; {{post.title}}</p>
+                            </div>
+                            <div class="postremarks">
+                                &nbsp;&nbsp;
+                                发帖时间:{{post.sendtime}}
+                                查看数:{{post.viewcount}}
+                                回复数:{{post.replycount}}
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <ul class="pagination"></ul>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        var page=1
+        $("#searchbtn").click(function () {
+            if($("#searchcontent").val().length==0)
+            {
+                Swal.fire({
+                    icon: "error",
+                    title: "搜索内容不能为空",
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+            }else{
+                axios({
+                    method: "post",
+                    url: "/searchpostServlet",
+                    data:"page="+page+"&searchcontent="+$("#searchcontent").val()
+                }).then(function (resp) {
+                    v.postlist = resp.data
+                    console.log(resp.data)
+                })
+            }
+            axios({
+                method: "post",
+                url: "/searchpostcountServlet",
+                data:"searchcontent="+$("#searchcontent").val()
+            }).then(function (resp) {
+                totalcount = resp.data.totalcount
+                console.log("totalcount="+totalcount)
+                $('.pagination').jqPaginator({
+                    totalCounts: Number(totalcount),
+                    pageSize: 10,
+                    visiblePages: 10,
+                    first: '<li class="first"><a href="javascript:void(0);">首页<\/a><\/li>',
+                    prev: '<li class="prev"><a href="javascript:void(0);"><i class="arrow arrow2"><\/i>上一页<\/a><\/li>',
+                    next: '<li class="next"><a href="javascript:void(0);">下一页<i class="arrow arrow3"><\/i><\/a><\/li>',
+                    last: '<li class="last"><a href="javascript:void(0);">末页<\/a><\/li>',
+                    page: '<li class="page"><a href="javascript:void(0);">{{page}}<\/a><\/li>',
+                    currentPage: Number(page),
+                    onPageChange: function (num, type) {
+                        if (type == "change") {
+                            if($("#searchcontent").val().length==0)
+                        {
+                            Swal.fire({
+                                icon: "error",
+                                title: "搜索内容不能为空",
+                                showConfirmButton: false,
+                                timer: 1500
+                            })
+                        }else{
+                            axios({
+                                method: "post",
+                                url: "/searchpostServlet",
+                                data:"page="+num+"&searchcontent="+$("#searchcontent").val()
+                            }).then(function (resp) {
+                                v.postlist = resp.data
+                                console.log(resp.data)
+                            })
+                        }
+                        }
+                    }
+                })
+            })
+        })
+    })
+    const {createApp} = Vue
+    let v = createApp({
+        data() {
+            return {
+                postlist: []
+            }
+        }
+    }).mount('#postclasslist')
+</script>
+</body>
+</html>

@@ -11,4 +11,6 @@ public interface PostClassMapper {
     //查询所有版区
     List<PostClass> selectPostClasspcname();
     Integer selectpcid(@Param("postclassenglishname")String postclassenglishname);
+    //获取版区名字
+    String selectpostclassname(@Param("englishname")String englishname);
 }

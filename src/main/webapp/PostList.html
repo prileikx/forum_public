@@ -70,7 +70,6 @@
             border-radius: unset !important;
         }
     </style>
-    <title>版区</title>
 </head>
 <body>
 <div id="header"></div>
@@ -129,8 +128,6 @@
     pagepos = URL.indexOf("page=");
     page = URL.substring(pagepos + 5)
     totalcount = 1;
-
-
     const {createApp} = Vue
     createApp({
         data() {
@@ -146,6 +143,13 @@
                 url: sendurl + "?page=" + page
             }).then(function (resp) {
                 _this.postlist = resp.data
+            })
+            axios({
+                method: "post",
+                url: "/getpostclassnameServlet",
+                data:"postclass="+postclass
+            }).then(function (resp) {
+                document.title=resp.data.title
             })
         },
         methods: {

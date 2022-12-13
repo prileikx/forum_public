@@ -19,20 +19,19 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-@WebServlet(name = "getPostContentServlet", value = "/getPostContentServlet/*")
-public class getPostContentServlet extends HttpServlet {
+@WebServlet(name = "searchpostServlet", value = "/searchpostServlet")
+public class searchpostServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json;charset=utf-8");
         SqlSessionFactory sqlSessionFactory = SqlSessionFactoryUtils.getSqlSessionFactory();
         SqlSession sqlSession = sqlSessionFactory.openSession(true);
         PrintWriter writer = response.getWriter();
-        Integer page = 1;
-        page = Integer.valueOf(request.getParameter("page"));
         String URI = request.getRequestURI();
-        String pid = URI.substring(23);
-        PostMapper postMapper = sqlSession.getMapper(PostMapper.class);
-        Posts post = postMapper.selectPostContent(Integer.valueOf(pid));
+        String pcenglishname = URI.substring(13);
+        PostClassMapper postClassMapper = sqlSession.getMapper(PostClassMapper.class);
+        Integer pcid = postClassMapper.selectpcid(pcenglishname);
+        List<Posts> emptyPostList = new ArrayList<>();
         Posts emptyPost = new Posts();
         Cookie[] cookies = request.getCookies();
         String uid = null;
@@ -49,8 +48,7 @@ public class getPostContentServlet extends HttpServlet {
         }
         Integer limits = 0;
         if (uid == null || verifycode == null) {
-            //默认不登录状态下权限为50
-            limits = 50;
+            limits = 40;
         } else {
             UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
             User user = userMapper.selectuser(Integer.parseInt(uid), verifycode);
@@ -59,23 +57,31 @@ public class getPostContentServlet extends HttpServlet {
                 limits = userGroupMapper.selectUserLimits(user.getUgid());
             }
         }
-        PostClassMapper postClassMapper = sqlSession.getMapper(PostClassMapper.class);
-        Integer pcid = post.getPcid();
-        String poststring = JSON.toJSONString(post);
-        if (limits >= postClassMapper.selectPostClassLimits(pcid)) {
-            if (pcid != null) {
-                String postContent = JSON.toJSONString(post);
-                postMapper.updateviewcount(Integer.valueOf(pid));
-                writer.print(postContent);
+        if (limits >= 50) {
+            PostMapper postMapper = sqlSession.getMapper(PostMapper.class);
+            Integer page = Integer.valueOf(request.getParameter("page"));
+            if (page == null) {
+                page = 1;
+            }
+            Integer start = (page - 1) * 10;
+            String searchcontent = request.getParameter("searchcontent");
+            List<Posts> posts = postMapper.searchpostbycontent(searchcontent, start);
+            if (posts != null && !posts.isEmpty()) {
+                String postList = JSON.toJSONString(posts);
+                writer.print(postList);
             } else {
-                emptyPost.setTitle("主题不存在");
-                String emptyPostListString = JSON.toJSONString(emptyPost);
+                emptyPost.setTitle("没有搜索到任何结果");
+                emptyPost.setPcid(pcid);
+                emptyPostList.add(emptyPost);
+                String emptyPostListString = JSON.toJSONString(emptyPostList);
                 writer.print(emptyPostListString);
             }
         } else {
-            emptyPost.setTitle("访问权限不足");
-            String emptyPostString = JSON.toJSONString(emptyPost);
-            writer.print(emptyPostString);
+            emptyPost.setTitle("权限不足,仅登录用户可使用搜索功能");
+            emptyPost.setPcid(pcid);
+            emptyPostList.add(emptyPost);
+            String emptyPostListString = JSON.toJSONString(emptyPostList);
+            writer.print(emptyPostListString);
         }
         sqlSession.close();
         writer.flush();

@@ -17,5 +17,9 @@
         select pcid
         from postclass where englishname=#{postclassenglishname};
     </select>
+    <select id="selectpostclassname" resultType="java.lang.String">
+        select pcname
+        from postclass where englishname=#{englishname};
+    </select>
 
 </mapper>
