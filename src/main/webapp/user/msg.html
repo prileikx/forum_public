@@ -7,6 +7,7 @@
     <script src="/js/jquery-3.0.0.js"></script>
     <script src="/js/jquery.cookie.js"></script>
     <script src="/js/jq-paginator.min.js"></script>
+    <script src="/js/msg.js"></script>
     <script src="/js/sweetalert2.all.min.js"></script>
     <script src="/js/sha1.min.js"></script>
     <script src="/js/flickity.pkgd.min.js"></script>
@@ -70,20 +71,35 @@
             margin-left: 10px;
             width: 270px;
         }
-        .collecttd{
-            border: #000000 solid 1px;
+
+        .collecttd {
+            border-left: #000000 solid 1px;
+            border-right: #000000 solid 1px;
+            border-bottom: #000000 solid 1px;
+            border-top: #000000 solid 0;
             width: 1000px;
             text-overflow: ellipsis;
             overflow: hidden;
             white-space: nowrap;
         }
-        .collectp{
+        #collecttable table:first-child tr td{
+            border-top: #000000 solid 1px;
+        }
+        #msgtable table:first-child tr td{
+            border-top: #000000 solid 1px;
+        }
+        .collectp {
             width: 1000px;
             text-overflow: ellipsis;
             overflow: hidden;
             white-space: nowrap;
         }
-        #collecttable{
+
+        #collecttable {
+            margin-left: 10px;
+            padding-bottom: 10px;
+        }
+        #msgtable {
             margin-left: 10px;
             padding-bottom: 10px;
         }
@@ -107,7 +123,7 @@
                     <button id="usersetbtn">
                         用户设置
                     </button>
-                    <button id="collectbtn" @click="getcollectlist">
+                    <button id="collectbtn">
                         用户收藏
                     </button>
                     <button id="msgbtn">
@@ -228,17 +244,33 @@
             <ul class="pagination" style="height: 40px"></ul>
         </div>
 
-        <table id="msgtable" hidden>
+        <div id="msgtable" hidden>
+        <table v-for="m in messagelist">
             <tr>
-                <td>111</td>
+                <td class="collecttd">
+                    <div class="collectp">
+                        <span v-if="m.uid!=10">
+                            <a :href="'/user/msg/'+m.whoreplyuid">{{m.username}}</a>
+                        </span>
+                        {{m.msg}}
+                        <span v-if="m.uid!=10">
+                            <a :href="'/Posts/'+m.pid+'?page=1'">{{m.title}}</a>
+                        </span>
+                    </div>
+                </td>
             </tr>
         </table>
+        <ul class="pagination" style="height: 40px"></ul>
+        </div>
     </div>
 
 </div>
 
 <script>
+
+
     $(document).ready(function () {
+
         $("#userinfobtn").click(function () {
             $("#setpage").hide()
             $("#collecttable").hide()
@@ -256,20 +288,203 @@
             $("#basictable").hide()
             $("#setpage").hide()
             $("#msgtable").show()
+            axios({
+                method: "POST",
+                url: "/getMessageListServlet",
+                data: "page=1"
+            }).then(function (resp) {
+                v.messagelist = resp.data
+                console.log(resp.data)
+            }).catch(function (error) {
+                console.log(error)
+                Swal.fire(
+                    {
+                        icon: 'error',
+                        title: "服务器无法处理该请求",
+                        showConfirmButton: false,
+                        timer: 2000
+                    }
+                )
+            })
+            axios({
+                method: "post",
+                url: "/getMessageCountServlet"
+            }).then(function (resp) {
+                msgtotalcount = resp.data.msgtotalcount
+                console.log("totalcount=" + msgtotalcount)
+                console.log("分页被初始化了")
+                $('.pagination').jqPaginator({
+                    totalCounts: Number(msgtotalcount),
+                    pageSize: 10,
+                    visiblePages: 10,
+                    first: '<li class="first"><a href="javascript:void(0);">首页<\/a><\/li>',
+                    prev: '<li class="prev"><a href="javascript:void(0);"><i class="arrow arrow2"><\/i>上一页<\/a><\/li>',
+                    next: '<li class="next"><a href="javascript:void(0);">下一页<i class="arrow arrow3"><\/i><\/a><\/li>',
+                    last: '<li class="last"><a href="javascript:void(0);">末页<\/a><\/li>',
+                    page: '<li class="page"><a href="javascript:void(0);">{{page}}<\/a><\/li>',
+                    currentPage: 1,
+                    onPageChange: function (num, type) {
+                        if (type == "change") {
+                            axios({
+                                method: "POST",
+                                url: "/getMessageListServlet",
+                                data: "page=" + num
+                            }).then(function (resp) {
+                                v.messagelist = resp.data
+                                console.log(resp.data)
+                            }).catch(function (error) {
+                                console.log(error)
+                                Swal.fire(
+                                    {
+                                        icon: 'error',
+                                        title: "服务器无法处理该请求",
+                                        showConfirmButton: false,
+                                        timer: 2000
+                                    }
+                                )
+                            })
+                        }
+                    }
+                });
+            })
         })
+        $("#collectbtn").click(function () {
+            $("#msgtable").hide()
+            $("#basictable").hide()
+            $("#setpage").hide()
+            $("#collecttable").show()
+            axios({
+                method: "POST",
+                url: "/getusercollectServlet",
+                data: "page=1"
+            }).then(function (resp) {
+                v.collectlist = resp.data
+                console.log(resp.data)
+            }).catch(function (error) {
+                console.log(error)
+                Swal.fire(
+                    {
+                        icon: 'error',
+                        title: "服务器无法处理该请求",
+                        showConfirmButton: false,
+                        timer: 2000
+                    }
+                )
+            })
+            axios({
+                method: "post",
+                url: "/getcollectcountServlet"
+            }).then(function (resp) {
+                totalcount = resp.data.totalcount
+                console.log("totalcount=" + totalcount)
+                console.log("分页被初始化了")
+                $('.pagination').jqPaginator({
+                    totalCounts: Number(totalcount),
+                    pageSize: 10,
+                    visiblePages: 10,
+                    first: '<li class="first"><a href="javascript:void(0);">首页<\/a><\/li>',
+                    prev: '<li class="prev"><a href="javascript:void(0);"><i class="arrow arrow2"><\/i>上一页<\/a><\/li>',
+                    next: '<li class="next"><a href="javascript:void(0);">下一页<i class="arrow arrow3"><\/i><\/a><\/li>',
+                    last: '<li class="last"><a href="javascript:void(0);">末页<\/a><\/li>',
+                    page: '<li class="page"><a href="javascript:void(0);">{{page}}<\/a><\/li>',
+                    currentPage: 1,
+                    onPageChange: function (num, type) {
+                        if (type == "change") {
+                            axios({
+                                method: "POST",
+                                url: "/getusercollectServlet",
+                                data: "page=" + num
+                            }).then(function (resp) {
+                                v.collectlist = resp.data
+                                console.log(resp.data)
+                            }).catch(function (error) {
+                                console.log(error)
+                                Swal.fire(
+                                    {
+                                        icon: 'error',
+                                        title: "服务器无法处理该请求",
+                                        showConfirmButton: false,
+                                        timer: 2000
+                                    }
+                                )
+                            })
+                        }
+                    }
+                });
+            })
+        })
+
+
         $("#changeiconbtn").click(function () {
             swal.fire({
                 title: "修改头像",
                 html: `
                 <form action="/uploadServlet" method="post" enctype="multipart/form-data">
-                <p><input type="file" name="file1"></p>
-                <p><input type="submit"></p>
+                <p><input type="file" name="file1" id="uploadicon"></p>
                 </form>
                 `,
                 showCancelButton: true,
-                showConfirmButton:false,
+                showConfirmButton: true,
                 cancelButtonText: "取消",
+            }).then((res) => {
+                if (res.value) {
+                    console.log("被执行了")
+                    console.log($("#uploadicon"))
+                    let file = $("#uploadicon")[0].files[0]
+                    const formData=new FormData();
+                    formData.append("uploadFile",file);
+                    axios({
+                        method: "POST",
+                        url: "/uploadServlet",
+                        enctype:"multipart/form-data",
+                        data: formData
+                    }).then(function (response) {
+                        console.log(response.data)
+                        if (response.data.msg == "修改成功") {
+                            setTimeout("location.reload(true)", 1000)
+                            Swal.fire(
+                                {
+                                    icon: 'success',
+                                    title: response.data.msg,
+                                    showConfirmButton: false,
+                                    timer: 2000
+                                }
+                            )
+                        } else {
+                            Swal.fire(
+                                {
+                                    icon: 'error',
+                                    title: response.data.msg,
+                                    showConfirmButton: false,
+                                    timer: 2000
+                                }
+                            )
+                        }
+                    })
+                }
             })
+        }).then(function (response) {
+            console.log(response.data.msg)
+            if (response.data.msg == "修改成功") {
+                setTimeout("location.reload(true)", 1000)
+                Swal.fire(
+                    {
+                        icon: 'success',
+                        title: response.data.msg,
+                        showConfirmButton: false,
+                        timer: 2000
+                    }
+                )
+            } else {
+                Swal.fire(
+                    {
+                        icon: 'error',
+                        title: response.data.msg,
+                        showConfirmButton: false,
+                        timer: 2000
+                    }
+                )
+            }
         })
         $("#changeemailbtn").click(function () {
             Swal.fire({
@@ -308,7 +523,6 @@
                             setTimeout("location.reload(true)", 1000)
                             Swal.fire(
                                 {
-                                    type: 'success',
                                     icon: 'success',
                                     title: response.data.msg,
                                     showConfirmButton: false,
@@ -318,7 +532,6 @@
                         } else {
                             Swal.fire(
                                 {
-                                    type: 'error',
                                     icon: 'error',
                                     title: response.data.msg,
                                     showConfirmButton: false,
@@ -357,42 +570,39 @@
                 },
             }).then((res) => {
                 if (res.value) {
-                    if($("#change_password").val().length>=6&&$("#change_password").val().length<=16){
-                    axios({
-                        method: "POST",
-                        url: "/changepasswordServlet",
-                        data: "password=" + sha1($("#password_origin").val()) + "&afpassword=" + sha1($("#change_password").val())
-                    }).then(function (response) {
-                        console.log(response.data.msg)
-                        if (response.data.msg == "修改成功,请重新登录") {
-                            $.cookie("uid",null,{expires: -1,path: "/"})
-                            $.cookie("verifycode",null,{expires: -1,path: "/"})
-                            setTimeout("location.reload(true)", 1000)
-                            Swal.fire(
-                                {
-                                    type: 'success',
-                                    icon: 'success',
-                                    title: response.data.msg,
-                                    showConfirmButton: false,
-                                    timer: 2000
-                                }
-                            )
-                        } else {
-                            Swal.fire(
-                                {
-                                    type: 'error',
-                                    icon: 'error',
-                                    title: response.data.msg,
-                                    showConfirmButton: false,
-                                    timer: 2000
-                                }
-                            )
-                        }
-                    })
-                    }else {
+                    if ($("#change_password").val().length >= 6 && $("#change_password").val().length <= 16) {
+                        axios({
+                            method: "POST",
+                            url: "/changepasswordServlet",
+                            data: "password=" + sha1($("#password_origin").val()) + "&afpassword=" + sha1($("#change_password").val())
+                        }).then(function (response) {
+                            console.log(response.data.msg)
+                            if (response.data.msg == "修改成功,请重新登录") {
+                                $.cookie("uid", null, {expires: -1, path: "/"})
+                                $.cookie("verifycode", null, {expires: -1, path: "/"})
+                                setTimeout("location.reload(true)", 1000)
+                                Swal.fire(
+                                    {
+                                        icon: 'success',
+                                        title: response.data.msg,
+                                        showConfirmButton: false,
+                                        timer: 2000
+                                    }
+                                )
+                            } else {
+                                Swal.fire(
+                                    {
+                                        icon: 'error',
+                                        title: response.data.msg,
+                                        showConfirmButton: false,
+                                        timer: 2000
+                                    }
+                                )
+                            }
+                        })
+                    } else {
                         Swal.fire(
                             {
-                                type: 'error',
                                 icon: 'error',
                                 title: "密码长度不正确",
                                 showConfirmButton: false,
@@ -426,7 +636,7 @@
                 },
             }).then((res) => {
                 if (res.value) {
-                    if($("#change_username").val().length>=3&&$("#change_username").val().length<=10){
+                    if ($("#change_username").val().length >= 3 && $("#change_username").val().length <= 10) {
                         axios({
                             method: "POST",
                             url: "/changeusernameServlet",
@@ -437,7 +647,6 @@
                                 setTimeout("location.reload(true)", 1000)
                                 Swal.fire(
                                     {
-                                        type: 'success',
                                         icon: 'success',
                                         title: response.data.msg,
                                         showConfirmButton: false,
@@ -447,7 +656,6 @@
                             } else {
                                 Swal.fire(
                                     {
-                                        type: 'error',
                                         icon: 'error',
                                         title: response.data.msg,
                                         showConfirmButton: false,
@@ -456,10 +664,9 @@
                                 )
                             }
                         })
-                    }else {
+                    } else {
                         Swal.fire(
                             {
-                                type: 'error',
                                 icon: 'error',
                                 title: "用户名长度不正确",
                                 showConfirmButton: false,
@@ -493,49 +700,47 @@
                 },
             }).then((res) => {
                 if (res.value) {
-                        axios({
-                            method: "POST",
-                            url: "/changedescribeServlet",
-                            data: "describe=" + $("#change_describe").val()
-                        }).then(function (response) {
-                            if (response.data.msg == "修改成功") {
-                                setTimeout("location.reload(true)", 1000)
-                                Swal.fire(
-                                    {
-                                        type: 'success',
-                                        icon: 'success',
-                                        title: response.data.msg,
-                                        showConfirmButton: false,
-                                        timer: 2000
-                                    }
-                                )
-                            } else {
-                                Swal.fire(
-                                    {
-                                        type: 'error',
-                                        icon: 'error',
-                                        title: response.data.msg,
-                                        showConfirmButton: false,
-                                        timer: 2000
-                                    }
-                                )
-                            }
-                        })
+                    axios({
+                        method: "POST",
+                        url: "/changedescribeServlet",
+                        data: "describe=" + $("#change_describe").val()
+                    }).then(function (response) {
+                        if (response.data.msg == "修改成功") {
+                            setTimeout("location.reload(true)", 1000)
+                            Swal.fire(
+                                {
+                                    icon: 'success',
+                                    title: response.data.msg,
+                                    showConfirmButton: false,
+                                    timer: 2000
+                                }
+                            )
+                        } else {
+                            Swal.fire(
+                                {
+                                    icon: 'error',
+                                    title: response.data.msg,
+                                    showConfirmButton: false,
+                                    timer: 2000
+                                }
+                            )
+                        }
+                    })
                 }
             })
         })
 
 
-
     })
     const {createApp} = Vue
-    createApp({
+    v = createApp({
         data() {
             return {
                 user: [],
                 usergroup: [],
                 chakan: "msg",
-                collectlist:[]
+                collectlist: [],
+                messagelist:[]
             }
         },
         mounted() {
@@ -555,7 +760,7 @@
                 } else {
                     _this.user.ifconfirmemail = "未验证"
                 }
-                if (resp.data.uid==$.cookie("uid")){
+                if (resp.data.uid == $.cookie("uid")) {
                     $("#usermenu").show()
                 }
             })
@@ -566,73 +771,6 @@
                 _this.usergroup = resp.data
                 console.log(resp.data)
             })
-        },
-        methods:{
-            getcollectlist:function () {
-                var _this = this;
-                $("#msgtable").hide()
-                $("#basictable").hide()
-                $("#setpage").hide()
-                $("#collecttable").show()
-                axios({
-                    method: "POST",
-                    url: "/getusercollectServlet",
-                    data:"page=1"
-                }).then(function (resp) {
-                    _this.collectlist=resp.data
-                    console.log(resp.data)
-                }).catch(function (error) {
-                    Swal.fire(
-                        {
-                            type: 'error',
-                            icon: 'error',
-                            title: "服务器无法处理该请求",
-                            showConfirmButton: false,
-                            timer: 2000
-                        }
-                    )
-                })
-                axios({
-                    method: "post",
-                    url: "/getcollectcountServlet"
-                }).then(function (resp) {
-                    totalcount = resp.data.totalcount
-                    console.log("totalcount="+totalcount)
-                    $('.pagination').jqPaginator({
-                        totalCounts: Number(totalcount),
-                        pageSize: 10,
-                        visiblePages: 10,
-                        first: '<li class="first"><a href="javascript:void(0);">首页<\/a><\/li>',
-                        prev: '<li class="prev"><a href="javascript:void(0);"><i class="arrow arrow2"><\/i>上一页<\/a><\/li>',
-                        next: '<li class="next"><a href="javascript:void(0);">下一页<i class="arrow arrow3"><\/i><\/a><\/li>',
-                        last: '<li class="last"><a href="javascript:void(0);">末页<\/a><\/li>',
-                        page: '<li class="page"><a href="javascript:void(0);">{{page}}<\/a><\/li>',
-                        currentPage: 1,
-                        onPageChange: function (num, type) {
-                            if (type == "change") {
-                                axios({
-                                    method: "POST",
-                                    url: "/getusercollectServlet",
-                                    data:"page="+num
-                                }).then(function (resp) {
-                                    _this.collectlist=resp.data
-                                    console.log(resp.data)
-                                }).catch(function (error) {
-                                    Swal.fire(
-                                        {
-                                            type: 'error',
-                                            icon: 'error',
-                                            title: "服务器无法处理该请求",
-                                            showConfirmButton: false,
-                                            timer: 2000
-                                        }
-                                    )
-                                })
-                            }
-                        }
-                    });
-                })
-            }
         }
     }).mount('#userinformation')
 </script>

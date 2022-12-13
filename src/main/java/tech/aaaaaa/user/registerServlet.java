@@ -32,27 +32,35 @@ public class registerServlet extends HttpServlet {
         String verify_code = request.getParameter("verify_code");
         HttpSession session = request.getSession();
         String checkcode = (String)session.getAttribute("checkcodegen");
-        //比对验证码
         PrintWriter writer= response.getWriter();
+        if (checkcode==null){
+            writer.print("{\"msg\":\"我们无法比对此验证码,请点击'看不清?换一张'重新获取验证码输入\"}");
+            return;
+        }
+        //比对验证码
         if(!checkcode.equalsIgnoreCase(verify_code)){
             writer.print("{\"msg\":\"验证码不正确\"}");
             return;
         }
+        System.out.println(2);
         String username = request.getParameter("username");
         if (username == null){
             writer.print("{\"msg\":\"用户名不能为空\"}");
             return;
         }
+        System.out.println(3);
         String email = request.getParameter("email");
         if (email == null){
             writer.print("{\"msg\":\"邮箱不能为空\"}");
             return;
         }
+        System.out.println(4);
         String email_verify = request.getParameter("email_verify");
         if (email_verify == null){
             writer.print("{\"msg\":\"邮箱验证码不能为空\"}");
             return;
         }
+        System.out.println(5);
         String upassword = request.getParameter("upassword");
         if (upassword== null){
             writer.print("{\"msg\":\"密码不能为空\"}");

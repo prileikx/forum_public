@@ -5,4 +5,19 @@
 <!--namespace名称空间-->
 <mapper namespace="tech.aaaaaa.mapper.MessageMapper">
 
+    <insert id="addreplyMessage">
+        insert into message (msg, uid,sendtime,whoreplyuid,pid)
+        values (#{msg},#{uid},now(),#{whoreplyuid},#{pid});
+    </insert>
+    <insert id="insertpublicmsg">
+        insert into message (msg, uid, sendtime)
+        values (#{msg},10,now());
+    </insert>
+    <select id="getMessageList" resultType="tech.aaaaaa.pojo.Message">
+        select message.*,posts.title,user.username from message,user,posts where user.uid=message.whoreplyuid and posts.pid=message.pid and message.uid=#{uid} or user.uid=message.whoreplyuid and posts.pid=message.pid and message.uid=10 order by mid desc limit #{start},10;
+    </select>
+    <select id="getMessageCount" resultType="java.lang.Integer">
+        select count(*)
+        from message where uid=#{uid} or uid=10;
+    </select>
 </mapper>

@@ -8,6 +8,11 @@
         insert into reply (pid, uid, content, sendtime)
         values (#{pid},#{uid},#{content},now());
     </insert>
+    <delete id="deleteReplybyRid">
+        delete
+        from reply
+        where rid=#{rid};
+    </delete>
 
     <select id="replyList" resultType="tech.aaaaaa.pojo.Reply">
         select reply.*,user.username,user.img
@@ -17,4 +22,9 @@
         select count(*)
         from reply where pid=#{pid};
     </select>
+    <select id="selectreplybyrid" resultType="tech.aaaaaa.pojo.Reply">
+        select *
+        from reply where rid=#{rid};
+    </select>
+
 </mapper>

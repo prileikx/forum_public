@@ -127,8 +127,7 @@ public class uploadServlet extends HttpServlet {
                             //POJO , 实体类, 如果想要在多个电脑运行, 传输-->需要把对象序列化
                             //JNI= java native Interface
                             //implements Serializable : 标记接口 , JVM-->java栈 本地方法栈 native -->C++
-
-                            writer.print("上传成功,请返回主页查看,文件名:"+FileName);
+                            writer.print("{\"msg\":\"修改成功\"}");
                             //可以使用UUID(唯一标识的通用码),保证文件名唯一
                             String uuidPath = UUID.randomUUID().toString();//生成一共随机的uuid
 

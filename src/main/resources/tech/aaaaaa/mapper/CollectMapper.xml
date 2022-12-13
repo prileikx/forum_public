@@ -15,7 +15,7 @@
         where uid=#{uid} and pid=#{pid};
     </delete>
     <select id="selectrusercollect" resultType="tech.aaaaaa.pojo.Collect">
-        select posts.title,collect.* from collect join posts on posts.pid=collect.pid where collect.uid=#{uid} LIMIT #{start},10;
+        select posts.title,collect.* from collect join posts on posts.pid=collect.pid where collect.uid=#{uid} order by cid desc LIMIT #{start},10;
     </select>
     <select id="selectifcollect" resultType="tech.aaaaaa.pojo.Collect">
         select *

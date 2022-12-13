@@ -3,6 +3,7 @@ package tech.aaaaaa.post;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import tech.aaaaaa.mapper.*;
+import tech.aaaaaa.pojo.Reply;
 import tech.aaaaaa.pojo.User;
 import tech.aaaaaa.util.SqlSessionFactoryUtils;
 
@@ -12,8 +13,8 @@ import javax.servlet.annotation.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@WebServlet(name = "sendreplyServlet", value = "/sendreplyServlet")
-public class sendreplyServlet extends HttpServlet {
+@WebServlet(name = "deletereplyServlet", value = "/deletereplyServlet")
+public class deletereplyServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json;charset=utf-8");
@@ -39,9 +40,6 @@ public class sendreplyServlet extends HttpServlet {
             sqlSession.close();
             return;
         }
-        Integer pid = Integer.valueOf(request.getParameter("pid"));
-        Integer pcid = postMapper.selectpcid(pid);
-        String content = request.getParameter("content");
         UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
         User user = userMapper.selectuser(Integer.valueOf(uid),verifycode);
         if (user == null){
@@ -51,16 +49,12 @@ public class sendreplyServlet extends HttpServlet {
             PostClassMapper postClassMapper = sqlSession.getMapper(PostClassMapper.class);
             UserGroupMapper userGroupMapper = sqlSession.getMapper(UserGroupMapper.class);
             //检查用户权限是否大于等于版区权限
-            if (userGroupMapper.selectUserLimits(user.getUgid())>=postClassMapper.selectPostClassLimits(pcid)){
-                int replyuid = Integer.parseInt(request.getParameter("replyuid"));
-                if (replyuid!=0){
-                    MessageMapper messageMapper =sqlSession.getMapper(MessageMapper.class);
-                    messageMapper.addreplyMessage(replyuid, Integer.valueOf(uid),"在以下帖子中回复了您:",pid);
-                }
-                ReplyMapper replyMapper = sqlSession.getMapper(ReplyMapper.class);
-                replyMapper.insertReply(pid,Integer.valueOf(uid),content);
-                userMapper.updatereplycount(Integer.valueOf(uid));
-                writer.print("{\"msg\":\"发送成功\"}");
+            ReplyMapper replyMapper = sqlSession.getMapper(ReplyMapper.class);
+            Integer rid = Integer.valueOf(request.getParameter("rid"));
+            Reply reply = replyMapper.selectreplybyrid(rid);
+            if (userGroupMapper.selectUserLimits(user.getUgid())>=200 || user.getUid()==reply.getUid()){
+                replyMapper.deleteReplybyRid(rid);
+                writer.print("{\"msg\":\"删除成功\"}");
             }
             else {
                 writer.print("{\"msg\":\"用户权限不足\"}");

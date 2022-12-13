@@ -12,4 +12,8 @@ public interface ReplyMapper {
     Integer selectreplycount(@Param("pid")Integer pid);
     //发送回复
     void insertReply(@Param("pid")Integer pid,@Param("uid")Integer uid,@Param("content")String content);
+    //根据rid查询单个回复
+    Reply selectreplybyrid(@Param("rid")Integer rid);
+    //根据rid删除单个回复
+    Integer deleteReplybyRid(@Param("rid")Integer rid);
 }

@@ -55,7 +55,9 @@
             background-color: #fff;
             border: 1px solid #ddd;
         }
-
+        p{
+            margin: 0;
+        }
         #postclasslist {
             text-align: left;
         }
@@ -97,6 +99,31 @@
 
         #collectico:active {
             background-color: #ddd;
+        }
+        .replytextbtn{
+            text-decoration: underline;
+        }
+        #themereplytextbtn{
+            text-decoration: underline;
+        }
+        #replytowho{
+            background-color: rgba(255, 255, 255, 0.8);
+            margin: 0.6em;
+            border: #aaaaaa solid 1px;
+            position: relative;
+        }
+        #replytowhocontent{
+            width: 1000px;
+            height: 27px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .deletereply{
+            color: #aaa;
+        }
+        #deletepost{
+            color: #aaa;
         }
     </style>
 </head>
@@ -143,6 +170,8 @@
                         发帖时间:{{post.sendtime}}
                         查看数:{{post.viewcount}}
                         回复数:{{post.replycount}}
+                        <a href="javascript:;" id="themereplytextbtn">回复</a>&nbsp
+                        <a href="javascript:;" id="deletepost">删除</a>
                         <img src="/resource/img/collect.png" id="collectico" alt="收藏" title="收藏">
                     </p>
                 </div>
@@ -156,7 +185,7 @@
                             </a>
                         </div>
                         <div style="text-align: center">
-                            <a class="usernamea" :href="'/user/msg/'+r.uid">
+                            <a href="#" class="usernamea" :href="'/user/msg/'+r.uid">
                             {{r.username}}
                             </a>
                         </div>
@@ -169,11 +198,18 @@
                     <div class="postremarks" style="margin: 10px;float: bottom">
                         <p>
                             发帖时间:{{r.sendtime}}
+                            <a href="javascript:;" class="replytextbtn">回复</a>&nbsp
+                            <a href="javascript:;" class="deletereply">删除</a>
                         </p>
                     </div>
                 </div>
             </div>
             <ul class="pagination" style="height: 40px"></ul>
+            <div id="replytowho" hidden>
+                <div>回复给:<span id="replytowhousername"></span></div>
+                <div>回复帖子:<div id="replytowhocontent"></div></div>
+                <a href="javascript:;" style="float:right;background-color:rgba(255,255,255,0.8);margin-bottom: 5px" id="cancelreply">取消回复</a>
+            </div>
             <textarea id="tinydemo" style="width: 1169px" placeholder="输入帖子内容,最少五个字符"
                       minlength="5"></textarea>
             <button id="newreply" style="margin-left: 10px;width: 1169px" @click="sendreply" class="success">发送帖子
@@ -182,7 +218,22 @@
     </div>
 </div>
 <script>
+
     $(document).ready(function () {
+        $("#themereplytextbtn").click(function () {
+            $("#replytowho").show()
+            rpindex = v.post.uid
+            $("#replytowhocontent").html(v.post.content)
+            $("#replytowhousername").text(v.post.username)
+            v.replyuid = v.post.uid
+        })
+        $("#cancelreply").click(function () {
+            $("#replytowhocontent").html('')
+            $("#replytowhousername").text('')
+            v.replyuid = 0
+            $("#replytowho").hide()
+        })
+
         $("#collectico").click(function () {
             axios({
                 method: "post",
@@ -259,7 +310,6 @@
             })
         })
     })
-
     const {createApp} = Vue
     let v = createApp({
         data() {
@@ -267,6 +317,7 @@
                 post: [],
                 replylist: [],
                 page: 0,
+                replyuid:0
             }
         },
         mounted() {
@@ -297,6 +348,96 @@
                 console.log(resp.data)
             })
         },
+        updated(){
+            var _this = this
+            $(".replytextbtn").click(function (){
+                $("#replytowho").show()
+                rpindex = $(".replytextbtn").index(this)
+                $("#replytowhocontent").html(_this.replylist[rpindex].content)
+                $("#replytowhousername").text(_this.replylist[rpindex].username)
+                _this.replyuid = _this.replylist[rpindex].uid
+            })
+            $(".deletereply").click(function () {
+                Swal.fire({
+                    title: '您确定要删除该回复吗?',
+                    showCancelButton: true,
+                    showConfirmButton: true,
+                    confirmButtonText: '删除',
+                    cancelButtonText: "取消",
+                }).then((res) => {
+                    if (res.value) {
+                        console.log($(".deletereply").index(this))
+                        axios({
+                            method: "POST",
+                            url: "/deletereplyServlet",
+                            data: "rid=" + _this.replylist[$(".deletereply").index(this)].rid
+                        }).then(function (response) {
+                            console.log(response.data.msg)
+                            if (response.data.msg == "删除成功") {
+                                setTimeout("location.reload(true)", 1000)
+                                Swal.fire(
+                                    {
+                                        icon: 'success',
+                                        title: response.data.msg,
+                                        showConfirmButton: false,
+                                        timer: 2000
+                                    }
+                                )
+                            } else {
+                                Swal.fire(
+                                    {
+                                        icon: 'error',
+                                        title: response.data.msg,
+                                        showConfirmButton: false,
+                                        timer: 2000
+                                    }
+                                )
+                            }
+                        })
+                    }
+                })
+            })
+            $("#deletepost").click(function () {
+                Swal.fire({
+                    title: '您确定要删除该帖子吗?',
+                    showCancelButton: true,
+                    showConfirmButton: true,
+                    confirmButtonText: '删除',
+                    cancelButtonText: "取消",
+                }).then((res) => {
+                    if (res.value) {
+                        console.log($(".deletereply").index(this))
+                        axios({
+                            method: "POST",
+                            url: "/deletepostServlet",
+                            data: "rid=" + _this.replylist[$(".deletereply").index(this)].rid
+                        }).then(function (response) {
+                            console.log(response.data.msg)
+                            if (response.data.msg == "删除成功") {
+                                setTimeout("location.reload(true)", 1000)
+                                Swal.fire(
+                                    {
+                                        icon: 'success',
+                                        title: response.data.msg,
+                                        showConfirmButton: false,
+                                        timer: 2000
+                                    }
+                                )
+                            } else {
+                                Swal.fire(
+                                    {
+                                        icon: 'error',
+                                        title: response.data.msg,
+                                        showConfirmButton: false,
+                                        timer: 2000
+                                    }
+                                )
+                            }
+                        })
+                    }
+                })
+            })
+        },
         methods: {
             sendreply: function () {
                 if (tinyMCE.activeEditor.getContent().length < 5) {
@@ -310,7 +451,7 @@
                     axios({
                         method: "post",
                         url: "/sendreplyServlet",
-                        data: "pid=" + this.post.pid + "&content=" + tinyMCE.activeEditor.getContent()
+                        data: "pid=" + this.post.pid + "&content=" + tinyMCE.activeEditor.getContent()+"&replyuid="+this.replyuid
                     }).then(function (resp) {
                         iconmark = 'error'
                         if (resp.data.msg == "发送成功") {

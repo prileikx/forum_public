@@ -39,7 +39,8 @@ public class sendregisteremailServlet extends HttpServlet {
                     writer.print("{\"msg\":\"验证码发送成功\"}");
                 }
                 else{
-                    if (checksendtime>=300){
+                    //间隔时间
+                    if (checksendtime>=60){
                         String verifycode = CheckCodeUtil.generateVerifyCode(4);
                         captchaMapper.updatesendemail(email,verifycode);
                         writer.print("{\"msg\":\"验证码发送成功\"}");

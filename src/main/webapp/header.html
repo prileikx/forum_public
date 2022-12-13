@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
   <script src="/js/axios.min.js"></script>
-  <script src="/js/jquery-3.0.0.js"></script>
+<!--  <script src="/js/jquery-3.0.0.js"></script>-->
   <script src="/js/sweetalert2.all.min.js"></script>
   <script src="/js/jquery.cookie.js"></script>
   <link rel="stylesheet" href="/css/picnic.css">
@@ -92,12 +92,12 @@
 <!--  <div class="headerbtn leftbtn">-->
 <!--    版区-->
 <!--  </div>-->
-  <div class="headerbtn leftbtn">
-    收藏
-  </div>
-  <div class="headerbtn leftbtn">
-    消息
-  </div>
+<!--  <div class="headerbtn leftbtn">-->
+<!--    收藏-->
+<!--  </div>-->
+<!--  <div class="headerbtn leftbtn">-->
+<!--    消息-->
+<!--  </div>-->
   <div class="headerbtn leftbtn">
     搜索
   </div>
@@ -154,11 +154,12 @@ $(document).ready(function () {
     }).then(function (resp) {
       $.cookie("uid",null,{expires: -1,path: "/"})
       $.cookie("verifycode",null,{expires: -1,path: "/"})
+      setTimeout("location.reload()",100)
     }).catch(function (error) {
       $.cookie("uid",null,{expires: -1,path: "/"})
       $.cookie("verifycode",null,{expires: -1,path: "/"})
+      setTimeout("location.reload()",100)
     })
-    location.reload();
   })
   $("#apersonal").attr('href','/user/msg/'+$.cookie('uid'))
   // $("#ausercollect").attr('href','/user/msg/'+$.cookie('uid'))
