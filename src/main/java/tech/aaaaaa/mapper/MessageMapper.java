@@ -14,5 +14,5 @@ public interface MessageMapper {
     //获取消息列表(包含公告)
     List<Message> getMessageList(@Param("uid")Integer uid,@Param("start")Integer start);
     //发送公告
-    Integer insertpublicmsg(@Param("msg")Integer msg);
+    Integer insertpublicmsg(@Param("msg")String msg);
 }

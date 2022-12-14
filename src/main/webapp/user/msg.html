@@ -261,6 +261,7 @@
             </tr>
         </table>
         <ul class="pagination" style="height: 40px"></ul>
+            <button  v-if="user.ugid==1" id="sendpublicmsg">发布公告</button>
         </div>
     </div>
 
@@ -270,7 +271,6 @@
 
 
     $(document).ready(function () {
-
         $("#userinfobtn").click(function () {
             $("#setpage").hide()
             $("#collecttable").hide()
@@ -770,6 +770,61 @@
             }).then(function (resp) {
                 _this.usergroup = resp.data
                 console.log(resp.data)
+            })
+        },
+        updated(){
+            $("#sendpublicmsg").click(function () {
+                Swal.fire({
+                    title: '发布公告',
+                    html: `
+            <form method="post" id="up1">
+            <label>输入公告:
+            <input type="text" name="publicmsg_content" id="publicmsg_content" form="up1">
+            </label>
+            </form>
+            `,
+                    showCancelButton: true,
+                    showConfirmButton: true,
+                    confirmButtonText: '修改',
+                    cancelButtonText: "取消",
+                    preConfirm: function () {
+                        return new Promise((resolve, reject) => {
+                            resolve({
+                                publicmsg_content: $("#publicmsg_content").val(),
+                            })
+                        })
+                    },
+                }).then((res) => {
+                    if (res.value) {
+                        axios({
+                            method: "POST",
+                            url: "/sendpublicmsgServlet",
+                            data: "publicmsg_content=[公告]" + $("#publicmsg_content").val()
+                        }).then(function (response) {
+                            console.log(response.data.msg)
+                            if (response.data.msg == "发布成功") {
+                                setTimeout("location.reload(true)", 1000)
+                                Swal.fire(
+                                    {
+                                        icon: 'success',
+                                        title: response.data.msg,
+                                        showConfirmButton: false,
+                                        timer: 2000
+                                    }
+                                )
+                            } else {
+                                Swal.fire(
+                                    {
+                                        icon: 'error',
+                                        title: response.data.msg,
+                                        showConfirmButton: false,
+                                        timer: 2000
+                                    }
+                                )
+                            }
+                        })
+                    }
+                })
             })
         }
     }).mount('#userinformation')

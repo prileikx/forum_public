@@ -224,12 +224,14 @@
             rpindex = v.post.uid
             $("#replytowhocontent").html(v.post.content)
             $("#replytowhousername").text(v.post.username)
+            v.replyprigincontent = v.replylist[rpindex].content
             v.replyuid = v.post.uid
         })
         $("#cancelreply").click(function () {
             $("#replytowhocontent").html('')
             $("#replytowhousername").text('')
             v.replyuid = 0
+            v.replyprigincontent = ''
             $("#replytowho").hide()
         })
 
@@ -316,7 +318,8 @@
                 post: [],
                 replylist: [],
                 page: 0,
-                replyuid:0
+                replyuid:0,
+                replyprigincontent:'',
             }
         },
         mounted() {
@@ -355,6 +358,7 @@
                 rpindex = $(".replytextbtn").index(this)
                 $("#replytowhocontent").html(_this.replylist[rpindex].content)
                 $("#replytowhousername").text(_this.replylist[rpindex].username)
+                _this.replyprigincontent = _this.replylist[rpindex].content
                 _this.replyuid = _this.replylist[rpindex].uid
             })
             $(".deletereply").click(function () {
@@ -448,10 +452,15 @@
                         timer: 1500
                     })
                 } else {
+                    if(this.replyuid!=0){
+                        content ='<div>回复帖子:<div style="width: 1000px;height: 27px;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;background-color:#aaa;">'+this.replyprigincontent+'</div></div>'+tinyMCE.activeEditor.getContent()
+                    }else {
+                        content=tinyMCE.activeEditor.getContent()
+                    }
                     axios({
                         method: "post",
                         url: "/sendreplyServlet",
-                        data: "pid=" + this.post.pid + "&content=" + tinyMCE.activeEditor.getContent()+"&replyuid="+this.replyuid
+                        data: "pid=" + this.post.pid + "&content=" + content+"&replyuid="+this.replyuid
                     }).then(function (resp) {
                         iconmark = 'error'
                         if (resp.data.msg == "发送成功") {
