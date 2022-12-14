@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="/css/picnic.css">
     <script src="/js/postlist.js"></script>
 <!--    <link rel="stylesheet" href="/css/bootstrap.min.css">-->
+<!--    注释参考POSTContent.html-->
     <style>
         .active>a{
             background-color: #ddd!important;
@@ -128,6 +129,7 @@
     pagepos = URL.indexOf("page=");
     page = URL.substring(pagepos + 5)
     totalcount = 1;
+    //通过usl获取page和postclass
     const {createApp} = Vue
     createApp({
         data() {
@@ -138,12 +140,14 @@
         },
         mounted() {
             var _this = this;
+            //获取帖子列表
             axios({
                 method: "post",
                 url: sendurl + "?page=" + page
             }).then(function (resp) {
                 _this.postlist = resp.data
             })
+            //获取版区名称
             axios({
                 method: "post",
                 url: "/getpostclassnameServlet",
@@ -153,6 +157,7 @@
             })
         },
         methods: {
+            //发送帖子功能
             sendpost: function () {
                 if (this.title.length < 3) {
                     Swal.fire({
@@ -196,6 +201,7 @@
         $("#newpost").click(function () {
             $("#testdiv").html(tinyMCE.activeEditor.getContent())
         })
+        //tinymce编辑器
         tinymce.init({
             selector: '#tinydemo',
             language: 'zh_CN',

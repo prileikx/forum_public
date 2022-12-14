@@ -3,20 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <script src="/js/vue.global.js"></script>
+    <!--   axios ajax方式发送post/get请求-->
     <script src="/js/axios.min.js"></script>
     <script src="/js/jquery-3.0.0.js"></script>
+    <!--    弹窗js-->
     <script src="/js/sweetalert2.all.min.js"></script>
+    <!--    jquery写的分页js-->
     <script src="/js/jq-paginator.min.js"></script>
+    <!--    轮播图js-->
     <script src="/js/flickity.pkgd.min.js"></script>
+<!--    tinymce输入框-->
     <script src="/js/tinymce/tinymce.min.js"></script>
+    <!--    轮播图css-->
     <link rel="stylesheet" href="/css/flickity.css">
+    <!--    轻量级css样式-->
     <link rel="stylesheet" href="/css/picnic.css">
+<!--    本页的专属js-->
     <script src="/js/postcontent.js"></script>
     <style>
         .active > a {
             background-color: #ddd !important;
         }
-
+        /*important是最高优先级*/
         .disabled {
             /*设置按钮禁用*/
             cursor: not-allowed !important;
@@ -31,7 +39,7 @@
             list-style: none;
             user-select: none;
         }
-
+        /*分页的样式*/
         .pagination > li > a:focus, .pagination > li > a:hover, .pagination > li > a > span:focus, .pagination > li > span:hover {
             z-index: 2;
             color: #23527c;
@@ -82,7 +90,7 @@
             margin-left: 10px !important;
             margin-top: 10px !important;
         }
-
+        /*收藏相关*/
         #collectico {
             width: 30px;
             height: 30px;
@@ -99,6 +107,7 @@
         #collectico:active {
             background-color: #ddd;
         }
+        /*回复相关*/
         .replytextbtn{
             text-decoration: underline;
         }
@@ -118,6 +127,7 @@
             overflow: hidden;
             white-space: nowrap;
         }
+        /*删除相关*/
         .deletereply{
             color: #aaa;
         }
@@ -127,6 +137,7 @@
     </style>
 </head>
 <body style="width: 100%;">
+<!--加载header.html作为导航栏-->
 <div id="header"></div>
 <script>
     $(document).ready(function () {
@@ -137,6 +148,7 @@
     <div id="getpid" hidden>{{post.pid}}</div>
     <div style="width: 1190px;display: inline-block;margin-top: 10px;">
         <div id="pcl">
+<!--            每个帖子{{}}调用vue中的数据,:是v-bind:的缩写,绑定数据-->
             <div class="eachpost">
                 <div class="postclassdiv">
                     <div>
@@ -144,6 +156,7 @@
                     </div>
                 </div>
             </div>
+<!--            v-if判断-->
             <div class="eachpost" style="min-height: 150px" v-if="page==1">
                 <div style="width: 100px;height: 134px;display: inline-block;margin-left: 10px;margin-right: 0;margin-top: 10px;margin-bottom: auto;float:left;">
                     <div>
@@ -160,6 +173,7 @@
                 <div style="display: inline-block;margin: 10px;margin-left: 0px;width: 1000px;min-height: 80px">
                     <div class="postclassdiv">
                         <div style="margin-left: 10px;float: top">
+<!--                            v-html加载内容,当做html加载-->
                             <p v-html="post.content" style="margin: 0"></p>
                         </div>
                     </div>
@@ -175,6 +189,7 @@
                     </p>
                 </div>
             </div>
+<!--            v-for循环输出-->
             <div v-for="r in replylist">
                 <div class="eachpost" style="position: relative;min-height: 150px">
                     <div style="width: 100px;height: 134px;display: inline-block;margin-left: 10px;margin-right: 10px;margin-top: 10px;margin-bottom: auto;float:left;">
@@ -203,12 +218,15 @@
                     </div>
                 </div>
             </div>
+<!--            分页-->
             <ul class="pagination" style="height: 40px"></ul>
+<!--            回复给谁-->
             <div id="replytowho" hidden>
                 <div>回复给:<span id="replytowhousername"></span></div>
                 <div>回复帖子:<div id="replytowhocontent"></div></div>
                 <a href="javascript:;" style="float:right;background-color:rgba(255,255,255,0.8);margin-bottom: 5px" id="cancelreply">取消回复</a>
             </div>
+<!--            tinymce输入框-->
             <textarea id="tinydemo" style="width: 1169px" placeholder="输入帖子内容,最少五个字符"
                       minlength="5"></textarea>
             <button id="newreply" style="margin-left: 10px;width: 1169px" @click="sendreply" class="success">发送帖子
@@ -217,8 +235,9 @@
     </div>
 </div>
 <script>
-
+//dom加载完成后执行
     $(document).ready(function () {
+        //点击回复之后的功能,添加帖子到回复区,从隐藏到展示
         $("#themereplytextbtn").click(function () {
             $("#replytowho").show()
             rpindex = v.post.uid
@@ -227,6 +246,7 @@
             v.replyprigincontent = v.replylist[rpindex].content
             v.replyuid = v.post.uid
         })
+        //关闭回复区并且取消回复
         $("#cancelreply").click(function () {
             $("#replytowhocontent").html('')
             $("#replytowhousername").text('')
@@ -234,16 +254,19 @@
             v.replyprigincontent = ''
             $("#replytowho").hide()
         })
-
+        //收藏按钮,用axios以ajax方式发送post请求,携带pid数据
         $("#collectico").click(function () {
             axios({
                 method: "post",
                 url: "/insertcollectServlet",
                 data:"pid="+$("#getpid").text()
             }).then(function (resp) {
+                //resp是返回的数据
+                //icon是弹窗时出现的图标,默认是错误,只有当正确执行时才会出现正确提示
                 var icontype='error'
                 if (resp.data.msg == '收藏成功') {
                     icontype = 'success'
+                    // 弹窗
                     Swal.fire({
                         icon: icontype,
                         title: resp.data.msg,
@@ -261,6 +284,7 @@
                         confirmButtonText: '取消收藏',
                         cancelButtonText: "关闭",
                     }).then((res) => {
+                        //若用户确定取消收藏则发送post请求
                         if (res.value) {
                             axios({
                                 method: "POST",
@@ -300,6 +324,7 @@
                         timer: 1500
                     })
                 }
+                //捕捉错误
             }).catch(function (error) {
                 var icontype='error'
                 Swal.fire({
@@ -311,6 +336,7 @@
             })
         })
     })
+//创建vue对象
     const {createApp} = Vue
     let v = createApp({
         data() {
@@ -323,6 +349,7 @@
             }
         },
         mounted() {
+            //组件加载完成后执行
             URL = document.URL
             resourcepositionstart = URL.indexOf("Posts");
             resourcepositionstart = resourcepositionstart + 6
@@ -334,6 +361,7 @@
             pid = URL.substring(resourcepositionstart, resourcepositionend)
             sendurl = "/getPostContentServlet/" + pid + '?page=' + page
             console.log("page" + page)
+            //通过网址获取页码,帖子pid等
             var _this = this;
             axios({
                 method: "post",
@@ -353,6 +381,7 @@
         },
         updated(){
             var _this = this
+            //回复按钮的功能,将内容添加到回复区
             $(".replytextbtn").click(function (){
                 $("#replytowho").show()
                 rpindex = $(".replytextbtn").index(this)
@@ -361,6 +390,7 @@
                 _this.replyprigincontent = _this.replylist[rpindex].content
                 _this.replyuid = _this.replylist[rpindex].uid
             })
+            //删除回复功能,只有管理员和发送回复的人才能删除
             $(".deletereply").click(function () {
                 Swal.fire({
                     title: '您确定要删除该回复吗?',
@@ -401,6 +431,7 @@
                     }
                 })
             })
+            // 删除帖子功能,只有管理员和发帖人可以删除
             $("#deletepost").click(function () {
                 Swal.fire({
                     title: '您确定要删除该帖子吗?',
@@ -443,6 +474,7 @@
             })
         },
         methods: {
+            //sendreply发送回复,
             sendreply: function () {
                 if (tinyMCE.activeEditor.getContent().length < 5) {
                     Swal.fire({
@@ -483,6 +515,7 @@
     $("#newreply").click(function () {
         $("#testdiv").html(tinyMCE.activeEditor.getContent())
     })
+//初始化tinymce输入框
     tinymce.init({
         selector: '#tinydemo',
         language: 'zh_CN',

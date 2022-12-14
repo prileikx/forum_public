@@ -3,37 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <script src="/js/vue.global.js"></script>
+<!--   axios ajax方式发送post/get请求-->
     <script src="/js/axios.min.js"></script>
     <script src="/js/jquery-3.0.0.js"></script>
+<!--    调用cookie用的js-->
     <script src="/js/jquery.cookie.js"></script>
+<!--    jquery写的分页js-->
     <script src="/js/jq-paginator.min.js"></script>
+<!--    本页的专属js-->
     <script src="/js/msg.js"></script>
+<!--    弹窗js-->
     <script src="/js/sweetalert2.all.min.js"></script>
+<!--    sha1加密js-->
     <script src="/js/sha1.min.js"></script>
+<!--    轮播图js-->
     <script src="/js/flickity.pkgd.min.js"></script>
+<!--    轮播图css-->
     <link rel="stylesheet" href="/css/flickity.css">
+<!--    轻量级css样式-->
     <link rel="stylesheet" href="/css/picnic.css">
     <title>用户信息</title>
     <style>
         .active > a {
+            /*import最高优先级,优先生效*/
             background-color: #ddd !important;
         }
-
+        /*禁用的样式,用在分页的按钮上*/
         .disabled {
             cursor: not-allowed !important;
             pointer-events: none !important;
         }
-
         .disabled a {
             color: #aaaaaa !important;
         }
-
+        /*列表样式*/
         li {
+            /*去掉列表的点*/
             list-style: none;
+            /*不可被用户选择文字*/
             user-select: none;
         }
-
+        /*分页的样式*/
         .pagination > li > a:focus, .pagination > li > a:hover, .pagination > li > a > span:focus, .pagination > li > span:hover {
+            /*z-index优先级,数越大优先级越高*/
             z-index: 2;
             color: #23527c;
             background-color: #aaa;
@@ -41,9 +53,10 @@
         }
 
         .pagination > li {
+            /*在一行中显示*/
             display: inline;
         }
-
+        /*分页样式*/
         .pagination > li > a, .pagination > li > span {
             position: relative;
             float: left;
@@ -55,7 +68,7 @@
             background-color: #fff;
             border: 1px solid #ddd;
         }
-
+        /*显示用户信息的表格的样式*/
         #usertable tbody tr td {
             background-color: rgba(255, 255, 255, 0);
             line-height: 30px;
@@ -64,14 +77,14 @@
         .usertable tbody tr {
             background-color: rgba(255, 255, 255, 0);
         }
-
+        /*用户信息上方的切换栏*/
         .usersetchangebtn td button {
             background-color: #ddd;
             color: black;
             margin-left: 10px;
             width: 270px;
         }
-
+        /*收藏*/
         .collecttd {
             border-left: #000000 solid 1px;
             border-right: #000000 solid 1px;
@@ -85,20 +98,26 @@
         #collecttable table:first-child tr td{
             border-top: #000000 solid 1px;
         }
+        /*消息*/
         #msgtable table:first-child tr td{
             border-top: #000000 solid 1px;
         }
+        /*收藏的p标签*/
         .collectp {
             width: 1000px;
+            /*超出显示省略号(三个点)*/
             text-overflow: ellipsis;
+            /*超出隐藏*/
             overflow: hidden;
+            /*一行中显示,不换行*/
             white-space: nowrap;
         }
-
+        /*收藏的表格样式*/
         #collecttable {
             margin-left: 10px;
             padding-bottom: 10px;
         }
+        /*消息的表格样式*/
         #msgtable {
             margin-left: 10px;
             padding-bottom: 10px;
@@ -106,15 +125,19 @@
     </style>
 </head>
 <body>
+<!--引入导航栏,js jquery load加载header.html-->
 <div id="header"></div>
 <script>
     $(document).ready(function () {
         $("#header").load("/header.html")
     })
 </script>
+<!--大框架-->
 <div style="width: 1190px;margin: 0 auto;margin-top: 10px" id="userinformation">
     <div class="grid-content" style="background-color:rgba(255,255,255,0.8);">
+<!--        用户菜单-->
         <table id="usermenu" hidden>
+<!--            按钮-->
             <tr class="usersetchangebtn">
                 <td colspan="2">
                     <button id="userinfobtn">
@@ -132,15 +155,18 @@
                 </td>
             </tr>
         </table>
+<!--        用户信息-->
         <table class="usertable" id="basictable" style="margin: 10px">
             <tr>
                 <td>
                     头像:
+<!--                    通过:src的方式调用vue中的数据,:是v-bind:的缩写-->
                     <img :src="'/resource/img/upload/'+user.img" style="width: 100px;height: 100px;">
                 </td>
             </tr>
             <tr>
                 <td id="getuid">
+<!--                    通过user.uid的方式调用vue中的数据-->
                     uid:{{user.uid}}
                 </td>
                 <td>
@@ -178,10 +204,12 @@
                 </td>
             </tr>
         </table>
+<!--        修改用户信息的表格,默认是隐藏的,只有点了用户设置的按钮才会显示,同时把其他的表格隐藏-->
         <table class="usertable" id="setpage" style="margin: 10px" hidden>
             <tr>
                 <td>
                     头像:
+                    <!--                    通过:src的方式调用vue中的数据-->
                     <img :src="'/resource/img/upload/'+user.img" style="width: 100px;height: 100px;">
                 </td>
                 <td>
@@ -192,6 +220,7 @@
             </tr>
             <tr>
                 <td>
+                    <!--                    通过user.uid的方式调用vue中的数据-->
                     邮箱:{{user.email}}
                 </td>
                 <td>
@@ -231,6 +260,7 @@
                 </td>
             </tr>
         </table>
+        <!--收藏的表格,默认是隐藏的,只有点了用户收藏的按钮才会显示,同时把其他的表格隐藏-->
         <div id="collecttable" hidden>
             <table v-for="c in collectlist">
                 <tr>
@@ -243,7 +273,7 @@
             </table>
             <ul class="pagination" style="height: 40px"></ul>
         </div>
-
+<!--消息的表格,默认是隐藏的,只有点了用户消息的按钮才会显示,同时把其他的表格隐藏-->
         <div id="msgtable" hidden>
         <table v-for="m in messagelist">
             <tr>
@@ -260,7 +290,9 @@
                 </td>
             </tr>
         </table>
+<!--            分页-->
         <ul class="pagination" style="height: 40px"></ul>
+<!--            发布公告按钮,v-if设置只有管理员才能看到此按钮-->
             <button  v-if="user.ugid==1" id="sendpublicmsg">发布公告</button>
         </div>
     </div>
@@ -268,9 +300,9 @@
 </div>
 
 <script>
-
-
+<!--  $(document).ready dom加载完毕之后才执行下边的  -->
     $(document).ready(function () {
+        //上边的四个按钮,点击时会显现点击的那个并且隐藏其他的
         $("#userinfobtn").click(function () {
             $("#setpage").hide()
             $("#collecttable").hide()
@@ -288,15 +320,20 @@
             $("#basictable").hide()
             $("#setpage").hide()
             $("#msgtable").show()
+            // 通过axios用ajax方式发送post请求
             axios({
                 method: "POST",
                 url: "/getMessageListServlet",
                 data: "page=1"
             }).then(function (resp) {
+                //设置vue中的数据为post请求返回的数据
                 v.messagelist = resp.data
+                //控制台打印返回结果
                 console.log(resp.data)
+            //    catch捕捉错误,报错弹窗
             }).catch(function (error) {
                 console.log(error)
+                //弹窗
                 Swal.fire(
                     {
                         icon: 'error',
@@ -306,13 +343,15 @@
                     }
                 )
             })
+            //用axios通过ajax方式发送post请求
             axios({
                 method: "post",
                 url: "/getMessageCountServlet"
             }).then(function (resp) {
+                //返回的是消息的总数量
                 msgtotalcount = resp.data.msgtotalcount
                 console.log("totalcount=" + msgtotalcount)
-                console.log("分页被初始化了")
+                //分页,设置pagesize每页10个,会自动根据总数量计算出页数,current当前页数
                 $('.pagination').jqPaginator({
                     totalCounts: Number(msgtotalcount),
                     pageSize: 10,
@@ -324,14 +363,18 @@
                     page: '<li class="page"><a href="javascript:void(0);">{{page}}<\/a><\/li>',
                     currentPage: 1,
                     onPageChange: function (num, type) {
+                        //当前页数改变时(用户点击页数时)
                         if (type == "change") {
+                            //同上,携带数据page=num,num即为用户点击的页数,返回结果为用户的消息列表
                             axios({
                                 method: "POST",
                                 url: "/getMessageListServlet",
                                 data: "page=" + num
                             }).then(function (resp) {
+                                //返回结果给vue中的数据赋值
                                 v.messagelist = resp.data
                                 console.log(resp.data)
+                                //错误捕捉,弹窗
                             }).catch(function (error) {
                                 console.log(error)
                                 Swal.fire(
@@ -348,11 +391,13 @@
                 });
             })
         })
+        //收藏按钮的点击功能
         $("#collectbtn").click(function () {
             $("#msgtable").hide()
             $("#basictable").hide()
             $("#setpage").hide()
             $("#collecttable").show()
+            //发送请求获得用户的收藏列表
             axios({
                 method: "POST",
                 url: "/getusercollectServlet",
@@ -371,6 +416,7 @@
                     }
                 )
             })
+            //返回结果为用户收藏的总数量
             axios({
                 method: "post",
                 url: "/getcollectcountServlet"
@@ -378,6 +424,7 @@
                 totalcount = resp.data.totalcount
                 console.log("totalcount=" + totalcount)
                 console.log("分页被初始化了")
+                //还是分页
                 $('.pagination').jqPaginator({
                     totalCounts: Number(totalcount),
                     pageSize: 10,
@@ -389,6 +436,7 @@
                     page: '<li class="page"><a href="javascript:void(0);">{{page}}<\/a><\/li>',
                     currentPage: 1,
                     onPageChange: function (num, type) {
+                        // 切换页码时发送请求获得新的数据
                         if (type == "change") {
                             axios({
                                 method: "POST",
@@ -414,7 +462,7 @@
             })
         })
 
-
+        //修改头像功能,需要注意enctype="multipart/form-data",只有这样才能上传文件
         $("#changeiconbtn").click(function () {
             swal.fire({
                 title: "修改头像",
@@ -428,8 +476,6 @@
                 cancelButtonText: "取消",
             }).then((res) => {
                 if (res.value) {
-                    console.log("被执行了")
-                    console.log($("#uploadicon"))
                     let file = $("#uploadicon")[0].files[0]
                     const formData=new FormData();
                     formData.append("uploadFile",file);
@@ -441,7 +487,9 @@
                     }).then(function (response) {
                         console.log(response.data)
                         if (response.data.msg == "修改成功") {
+                            //1秒后刷新网页
                             setTimeout("location.reload(true)", 1000)
+                            //弹窗,,title显示返回的消息
                             Swal.fire(
                                 {
                                     icon: 'success',
@@ -451,6 +499,7 @@
                                 }
                             )
                         } else {
+                            //弹窗,显示错误
                             Swal.fire(
                                 {
                                     icon: 'error',
@@ -466,6 +515,7 @@
         }).then(function (response) {
             console.log(response.data.msg)
             if (response.data.msg == "修改成功") {
+                //1秒后刷新
                 setTimeout("location.reload(true)", 1000)
                 Swal.fire(
                     {
@@ -486,9 +536,10 @@
                 )
             }
         })
+        //修改邮箱的功能
         $("#changeemailbtn").click(function () {
             Swal.fire({
-                title: '修改用户名',
+                title: '修改邮箱',
                 html: `
             <form method="post" id="up1">
             <label>输入密码:
@@ -513,6 +564,7 @@
                 },
             }).then((res) => {
                 if (res.value) {
+                    //携带数据email,password,
                     axios({
                         method: "POST",
                         url: "/changeemailServlet",
@@ -520,6 +572,7 @@
                     }).then(function (response) {
                         console.log(response.data.msg)
                         if (response.data.msg == "修改成功") {
+                            //修改成功1秒后刷新网页
                             setTimeout("location.reload(true)", 1000)
                             Swal.fire(
                                 {
@@ -543,6 +596,7 @@
                 }
             })
         })
+        //修改密码功能
         $("#changepasswordbtn").click(function () {
             Swal.fire({
                 title: '修改密码',
@@ -571,6 +625,7 @@
             }).then((res) => {
                 if (res.value) {
                     if ($("#change_password").val().length >= 6 && $("#change_password").val().length <= 16) {
+                        //需要注意携带的是加密后的密码
                         axios({
                             method: "POST",
                             url: "/changepasswordServlet",
@@ -613,6 +668,7 @@
                 }
             })
         })
+        //修改用户名的功能
         $("#changeusernamebtn").click(function () {
             Swal.fire({
                 title: '修改用户名',
@@ -677,6 +733,7 @@
                 }
             })
         })
+        //修改简介的功能
         $("#changedescribebtn").click(function () {
             Swal.fire({
                 title: '修改用户名',
@@ -732,6 +789,7 @@
 
 
     })
+//创建vue对象
     const {createApp} = Vue
     v = createApp({
         data() {
@@ -744,7 +802,9 @@
             }
         },
         mounted() {
+            // 组件加载完成后自动执行以下内容
             var _this = this;
+            //通过url获取帖子英文名
             URL = document.URL
             resourceposition = URL.indexOf("msg");
             resourceposition = resourceposition + 4
@@ -755,11 +815,13 @@
             }).then(function (resp) {
                 _this.user = resp.data
                 console.log(resp.data)
+                //邮箱是否被验证,1是已验证0是未验证
                 if (_this.user.ifconfirmemail == 1) {
                     _this.user.ifconfirmemail = "已验证"
                 } else {
                     _this.user.ifconfirmemail = "未验证"
                 }
+                //只有当cookie的uid和请求返回的uid相同时才显示用户菜单按钮
                 if (resp.data.uid == $.cookie("uid")) {
                     $("#usermenu").show()
                 }
@@ -773,6 +835,7 @@
             })
         },
         updated(){
+            //发布公告功能,只有管理员可以发
             $("#sendpublicmsg").click(function () {
                 Swal.fire({
                     title: '发布公告',
@@ -796,6 +859,7 @@
                     },
                 }).then((res) => {
                     if (res.value) {
+                        // 携带数据需要发送的公告
                         axios({
                             method: "POST",
                             url: "/sendpublicmsgServlet",
@@ -827,6 +891,7 @@
                 })
             })
         }
+    //    绑定id为userinformation的div
     }).mount('#userinformation')
 </script>
 </body>

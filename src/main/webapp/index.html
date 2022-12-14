@@ -3,12 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <script src="/js/vue.global.js"></script>
+    <!--   axios ajax方式发送post/get请求-->
     <script src="/js/axios.min.js"></script>
     <script src="/js/jquery-3.0.0.js"></script>
+    <!--    弹窗js-->
     <script src="/js/sweetalert2.all.min.js"></script>
+    <!--    sha1加密js-->
     <script src="/js/sha1.min.js"></script>
+    <!--    轮播图js-->
     <script src="/js/flickity.pkgd.min.js"></script>
+    <!--    轮播图css-->
     <link rel="stylesheet" href="/css/flickity.css">
+    <!--    轻量级css样式-->
     <link rel="stylesheet" href="/css/picnic.css">
     <style>
         #indexdiv{
@@ -23,11 +29,13 @@
         }
         .flickity-page-dots{
             background-color: rgba(255,255,255,0.8);
+            /*圆角边框5px*/
             border-radius: 5px;
         }
     </style>
     <title>首页</title>
 </head>
+<!--引入header.html作为导航栏-->
 <body style="width: 100%">
 <div id="header"></div>
 <script>
@@ -38,6 +46,7 @@
 <div style="width: 1190px;margin: 0 auto" id="indexdiv">
     <div style="width: 832px;display: inline-block;height: 250px;margin: 10px;margin-bottom: 45px">
         <div class="gallery js-flickity" data-flickity-options='{ "wrapAround": true, "autoPlay": 2000 }'>
+<!--            轮播图的图片-->
             <div class="gallery-cell">
                 <img src="/resource/img/indexlunboimg/1.jpg">
             </div>
@@ -55,6 +64,7 @@
             </div>
         </div>
     </div>
+<!--    display:inline-block是把div当成行内元素-->
     <div style="min-height: 250px;margin-top:10px;background-color:rgba(255,255,255,0.8);display: inline-block;float: right;width: 300px;margin-left: 10px;text-align: left;">
         <div style="margin: 10px">
             <p>这里适合放个广告</p>
@@ -62,13 +72,16 @@
     </div>
     <div style="width: 880px;display: inline-block;">
 <div class="flex two">
+<!--    vue使用v-for循环输出版区-->
     <div v-for="u in user">
         <div style="background-color:rgba(255,255,255,0.8);">
+<!--            :是v-bind:的缩写,调用vue中的数据-->
         <a :href="'/PostClass/'+u.englishname+'?page=1'" style="color: black;">
         <div class="postclassdiv">
         <div>
             <img :src="'/resource/img/PostClass/'+u.pcid+'.jpg'" id="postclassimg">
         </div>
+<!--            {{}}调用vue中的数据-->
         {{u.pcname}}
         </div>
         </a>
@@ -88,6 +101,7 @@
     </div>
 </div>
 <script>
+    // 创建vue对象
     const {createApp} = Vue
     createApp({
         data() {
@@ -96,16 +110,20 @@
             }
         },
         mounted() {
+            //组件加载完后自动执行
             var _this = this;
             axios({
                 method: "post",
                 url: "/selectPostpcnameServlet"
             }).then(function (resp) {
+                // 返回的数据加载到vue上
                 _this.user = resp.data
                 _this.user.pcid = "/resource/img/PostClass"+resp.data.pcid
             })
         }
+    //    挂载到id为indexdiv 的div上
     }).mount('#indexdiv')
+    //轮播图设置
     $('#galleryjs').flickity({
         // options
         cellAlign: 'left',

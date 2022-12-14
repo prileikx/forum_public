@@ -3,12 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <script src="/js/vue.global.js"></script>
+    <!--   axios ajax方式发送post/get请求-->
     <script src="/js/axios.min.js"></script>
     <script src="/js/jquery-3.0.0.js"></script>
+    <!--    弹窗js-->
     <script src="/js/sweetalert2.all.min.js"></script>
+    <!--    sha1加密js-->
     <script src="/js/sha1.min.js"></script>
+    <!--    jquery写的分页js-->
     <script src="/js/jq-paginator.min.js"></script>
+    <!--    轮播图js-->
     <script src="/js/tinymce/tinymce.min.js"></script>
+    <!--    轻量级css样式-->
     <link rel="stylesheet" href="/css/picnic.css">
     <style>
         .active>a{
@@ -25,7 +31,9 @@
             list-style: none;
             user-select: none;
         }
+        /*分页相关css*/
         .pagination>li>a:focus,.pagination>li>a:hover,.pagination>li>a>span:focus,.pagination>li>span:hover{
+            /*z-index是优先级*/
             z-index: 2;
             color: #23527c;
             background-color:#aaa;
@@ -72,6 +80,7 @@
     <title>搜索</title>
 </head>
 <body>
+<!--用jquery的load加载导航栏-->
 <div id="header"></div>
 <script>
     $(document).ready(function () {
@@ -102,12 +111,15 @@
                     </a>
                 </div>
             </div>
+<!--            分页-->
             <ul class="pagination"></ul>
         </div>
     </div>
 </div>
 <script>
+<!--    dom加载完成后-->
     $(document).ready(function () {
+        //获取搜索内容发送请求,默认为结果的第一页
         var page=1
         $("#searchbtn").click(function () {
             if($("#searchcontent").val().length==0)
@@ -119,6 +131,7 @@
                     timer: 1500
                 })
             }else{
+                //搜索帖子,返回帖子列表
                 axios({
                     method: "post",
                     url: "/searchpostServlet",
@@ -128,6 +141,7 @@
                     console.log(resp.data)
                 })
             }
+            //查询结果的帖子总数量
             axios({
                 method: "post",
                 url: "/searchpostcountServlet",
@@ -171,6 +185,7 @@
             })
         })
     })
+//创建vue对象
     const {createApp} = Vue
     let v = createApp({
         data() {

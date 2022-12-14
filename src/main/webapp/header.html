@@ -2,10 +2,13 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
+  <!--   axios ajax方式发送post/get请求-->
   <script src="/js/axios.min.js"></script>
 <!--  <script src="/js/jquery-3.0.0.js"></script>-->
   <script src="/js/sweetalert2.all.min.js"></script>
+  <!--    调用cookie用的js-->
   <script src="/js/jquery.cookie.js"></script>
+  <!--    轻量级css样式-->
   <link rel="stylesheet" href="/css/picnic.css">
   <style>
     #app{
@@ -125,13 +128,16 @@
 
 </div>
 <script>
+  //dom加载完成后立即执行下边的语句
 $(document).ready(function () {
   var uid=0
   var userstatus=0
+  // 用axios以ajax方式发送post请求
       axios({
         method: "post",
         url: "/getusernameServlet"
       }).then(function (resp) {
+        // 若用户是登录状态则返回用户名,否则显示登陆注册
         userstatus=resp.data.userstatus
         if (userstatus==200){
           $("#menuusername").css('display','inline-block')
@@ -149,14 +155,17 @@ $(document).ready(function () {
   $("#menuusername").click(function () {
     $("#menu").toggle(500)
   })
+  //退出登录功能
   $("#logout").click(function (){
     axios({
       method: "post",
       url: "/logoutServlet"
     }).then(function (resp) {
+      //若不是登陆状态或者用户验证错误,则清除cookie
       $.cookie("uid",null,{expires: -1,path: "/"})
       $.cookie("verifycode",null,{expires: -1,path: "/"})
       setTimeout("location.reload()",100)
+      //catch捕捉错误,如果服务器返回错误代码也会清除cookie
     }).catch(function (error) {
       $.cookie("uid",null,{expires: -1,path: "/"})
       $.cookie("verifycode",null,{expires: -1,path: "/"})
