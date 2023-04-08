@@ -11,7 +11,7 @@ import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
 import java.io.PrintWriter;
-
+//删除用户收藏
 @WebServlet(name = "deletecollectServlet", value = "/deletecollectServlet")
 public class deletecollectServlet extends HttpServlet {
     @Override
@@ -41,7 +41,6 @@ public class deletecollectServlet extends HttpServlet {
         }
         Integer pid = Integer.valueOf(request.getParameter("pid"));
         Integer pcid = postMapper.selectpcid(pid);
-        String content = request.getParameter("content");
         UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
         User user = userMapper.selectuser(Integer.valueOf(uid),verifycode);
         if (user == null){
@@ -56,6 +55,9 @@ public class deletecollectServlet extends HttpServlet {
                 if(collectMapper.selectifcollect(Integer.valueOf(uid),pid)!=null) {
                     collectMapper.deletecollect(Integer.valueOf(uid), pid);
                     writer.print("{\"msg\":\"取消收藏成功\"}");
+                }
+                else {
+                    writer.print("{\"msg\":\"该帖子未被用户收藏\"}");
                 }
             }
             else {

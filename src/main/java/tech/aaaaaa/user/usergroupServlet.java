@@ -13,7 +13,7 @@ import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
 import java.io.PrintWriter;
-
+//返回用户组
 @WebServlet(name = "usergroupServlet", value = "/usergroupServlet")
 public class usergroupServlet extends HttpServlet {
     @Override

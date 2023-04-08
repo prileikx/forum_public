@@ -65,7 +65,7 @@
                 </label>
             </td>
             <td>
-                <button @click="sendemail">发送验证码</button>
+                <button @click="sendemail" id="sendemailbtn">发送验证码</button>
             </td>
         </tr>
         <tr>
@@ -110,6 +110,65 @@
                 <label>
                     <input type="checkbox" id="accept">
                     <span class="checkable">同意《注册须知》</span>
+                </label>
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <label>
+                    <div id="captcha" style="margin: 10px"></div>
+                    <script src="https://www.recaptcha.net/recaptcha/api.js?render=explicit" async defer></script>
+                    <script>
+                        grecaptcha.enterprise.ready(function() {
+                            grecaptcha.enterprise.execute('6LcjFFElAAAAADUtXoS37jfdme4oCLoE514nIpQD', {action: 'login'}).then(function(token) {
+                            alert("通过验证")
+                            });
+                        });
+                    </script>
+                    <script>
+　　//验证码加载方法
+
+                    function handleLoadGoogleCaptcha()
+                    {
+                        this.codeFlag = false;
+                        let env = this;
+                        env.captchaId = grecaptcha.render("captcha", {
+                            //在Google reCaptcha网站获取的Site Key
+                            "sitekey": env.config.siteKey,
+                            //主题
+                            "theme": "light",
+                            //验证成功后的回调函数
+                            "callback": env.handleCaptchaCallback,
+                            //验证码超时后的回调函数
+                            "expired-callback": env.handleCaptchaExpired,
+                            //验证失败时的回调函数
+                            "error-callback": env.handleCaptchaError,
+                            //默认语言 默认是英语，简体中文写zh-CN 如果有其他需要请自行搜索
+                            "hl": this.$i18n.locale
+                        });
+                    }
+                    function handleCaptchaCallback(val)
+                    {
+                        if (val != null) {
+                            this.register.captchaCode = val;
+                            this.codeFlag = true;
+                        }
+                    }
+                    function handleCaptchaExpired()
+                    {
+                        this.register.captchaCode = "";
+                        this.codeFlag = false;
+                    }
+                    function handleCaptchaError()
+                    {
+                        this.register.captchaCode = "";
+                        //重置验证码
+                        grecaptcha.reset(this.captchaId);
+                        this.codeFlag = false;
+                    }
+                    </script>
                 </label>
             </td>
             <td></td>
@@ -204,15 +263,16 @@
                 }
             },
             methods: {
-                //发送邮件功能,实际只做了写入数据库,验证码需要从数据库中查看
+                //发送邮件功能
                 sendemail: function () {
+                    $("#sendemailbtn").attr("disabled",true);
                     axios({
                         method: "POST",
                         url: "/sendregisteremailServlet",
                         data: "email=" + this.email
                     }).then(function (resp) {
                         var icontype = "error"
-                        if (resp.data.msg == '验证码发送成功') {
+                        if (resp.data.msg == '验证码发送成功,如果未收到请检查垃圾邮件箱') {
                             icontype = 'success'
                         }
                         Swal.fire({
@@ -221,6 +281,7 @@
                             showConfirmButton: false,
                             timer: 1500
                         })
+                        $("#sendemailbtn").attr("disabled",false);
                     })
                 },
                 //看不清换一张验证码
@@ -233,7 +294,7 @@
                     if ($("#tips").text()=="该用户名可以使用"){
                         //检查密码输入长度
                         if (this.upassword==this.upasswordrepeat&&($("#upassword").val().length>=6&&$("#upassword").val().length<=16)||$("#upassword").val().length==40){
-                            //检查保存密码是否被选中
+                            //检查是否同意注册须知
                             if($("#accept").prop('checked')){
                                 if(this.upassword.length!=40)
                                 {

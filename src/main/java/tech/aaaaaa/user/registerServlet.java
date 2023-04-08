@@ -6,8 +6,10 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import tech.aaaaaa.mapper.CaptchaMapper;
 import tech.aaaaaa.mapper.UserMapper;
+import tech.aaaaaa.pojo.User;
 import tech.aaaaaa.util.CheckCodeUtil;
 import tech.aaaaaa.util.CheckEmailFormatUtil;
+import tech.aaaaaa.util.PasswordsaltUtil;
 import tech.aaaaaa.util.SqlSessionFactoryUtils;
 
 import javax.servlet.*;
@@ -76,8 +78,12 @@ public class registerServlet extends HttpServlet {
                     writer.print("{\"msg\":\"邮箱验证码不正确\"}");
                 } else {
                     if (userMapper.checkusernameifcanbeuse(request.getParameter("username")) == 0 && username.length() > 2) {
-                        Integer uid = userMapper.adduser(username, upassword, email);
+                        userMapper.adduser(username, upassword, email);
+                        User user = userMapper.selectuserbyusername(username);
+                        Integer uid = user.getUid();
                         captchaMapper.updateuid(email, uid);
+                        upassword = PasswordsaltUtil.password(upassword,user);
+                        userMapper.updatepassword(uid,upassword);
                         writer.print("{\"msg\":\"注册成功\"}");
                     } else {
                         writer.print("{\"msg\":\"该用户名已被注册,请更换一个\"}");

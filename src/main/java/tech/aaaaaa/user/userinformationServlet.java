@@ -8,6 +8,7 @@ import tech.aaaaaa.mapper.UserGroupMapper;
 import tech.aaaaaa.mapper.UserMapper;
 import tech.aaaaaa.pojo.Posts;
 import tech.aaaaaa.pojo.User;
+import tech.aaaaaa.util.CheckloginStatusUtil;
 import tech.aaaaaa.util.SqlSessionFactoryUtils;
 
 import javax.servlet.*;
@@ -17,7 +18,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-
+//用户的所有信息(不包括敏感信息)
 @WebServlet(name = "/userinformationServlet", value = "/userinformationServlet")
 public class userinformationServlet extends HttpServlet {
     @Override
@@ -29,20 +30,9 @@ public class userinformationServlet extends HttpServlet {
         String URI = request.getRequestURI();
         String reuid = request.getParameter("reuid");
         Cookie[] cookies = request.getCookies();
-        String uid = null;
-        String verifycode = null;
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                String name = cookie.getName();
-                if (name.equals("uid")) {
-                    uid = cookie.getValue();
-                } else if (name.equals("verifycode")) {
-                    verifycode = cookie.getValue();
-                }
-            }
-        }
         UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
-        if (uid == null || verifycode == null) {
+        Integer uid = CheckloginStatusUtil.CheckloginStatus(request);
+        if (uid < 0) {
             User user = userMapper.selectuserbyuid(Integer.valueOf(reuid));
             user.setEmail("not show");
             user.setVerify("not show");
@@ -50,9 +40,8 @@ public class userinformationServlet extends HttpServlet {
             String userjson = JSON.toJSONString(user);
             writer.print(userjson);
         } else {
-            User user = userMapper.selectuser(Integer.parseInt(reuid), verifycode);
-            if (user == null){
-                user = userMapper.selectuserbyuid(Integer.valueOf(reuid));
+            User user = userMapper.selectuserbyuid(Integer.valueOf(reuid));
+            if (uid != Integer.valueOf(reuid)){
                 user.setEmail("not show");
             }
             user.setVerify("not show");

@@ -12,7 +12,7 @@ import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
 import java.io.PrintWriter;
-
+//添加用户收藏
 @WebServlet(name = "insertcollectServlet", value = "/insertcollectServlet")
 public class insertcollectServlet extends HttpServlet {
     @Override
@@ -42,7 +42,6 @@ public class insertcollectServlet extends HttpServlet {
         }
         Integer pid = Integer.valueOf(request.getParameter("pid"));
         Integer pcid = postMapper.selectpcid(pid);
-        String content = request.getParameter("content");
         UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
         User user = userMapper.selectuser(Integer.valueOf(uid),verifycode);
         if (user == null){

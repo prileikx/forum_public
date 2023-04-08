@@ -9,7 +9,7 @@ import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
 import java.io.PrintWriter;
-
+//帖子重定向
 @WebServlet(name = "postcontentServlet", value = "/Posts/*")
 public class postcontentServlet extends HttpServlet {
     @Override

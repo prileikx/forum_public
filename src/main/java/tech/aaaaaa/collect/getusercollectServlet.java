@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-
+//获取用户收藏列表
 @WebServlet(name = "getusercollectServlet", value = "/getusercollectServlet")
 public class getusercollectServlet extends HttpServlet {
     @Override

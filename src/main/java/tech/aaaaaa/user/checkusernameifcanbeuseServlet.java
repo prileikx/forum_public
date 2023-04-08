@@ -11,7 +11,7 @@ import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
 import java.io.PrintWriter;
-
+//检查用户名是否可用
 @WebServlet(name = "checkusernameifcanbeuseServlet", value = "/checkusernameifcanbeuseServlet")
 public class checkusernameifcanbeuseServlet extends HttpServlet {
     @Override

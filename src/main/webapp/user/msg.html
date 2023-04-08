@@ -3,24 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <script src="/js/vue.global.js"></script>
-<!--   axios ajax方式发送post/get请求-->
+    <!--   axios ajax方式发送post/get请求-->
     <script src="/js/axios.min.js"></script>
     <script src="/js/jquery-3.0.0.js"></script>
-<!--    调用cookie用的js-->
+    <!--    调用cookie用的js-->
     <script src="/js/jquery.cookie.js"></script>
-<!--    jquery写的分页js-->
+    <!--    jquery写的分页js-->
     <script src="/js/jq-paginator.min.js"></script>
-<!--    本页的专属js-->
+    <!--    本页的专属js-->
     <script src="/js/msg.js"></script>
-<!--    弹窗js-->
+    <!--    弹窗js-->
     <script src="/js/sweetalert2.all.min.js"></script>
-<!--    sha1加密js-->
+    <!--    sha1加密js-->
     <script src="/js/sha1.min.js"></script>
-<!--    轮播图js-->
+    <!--    轮播图js-->
     <script src="/js/flickity.pkgd.min.js"></script>
-<!--    轮播图css-->
+    <!--    轮播图css-->
     <link rel="stylesheet" href="/css/flickity.css">
-<!--    轻量级css样式-->
+    <!--    轻量级css样式-->
     <link rel="stylesheet" href="/css/picnic.css">
     <title>用户信息</title>
     <style>
@@ -30,7 +30,9 @@
         }
         /*禁用的样式,用在分页的按钮上*/
         .disabled {
+            /*禁用鼠标点击*/
             cursor: not-allowed !important;
+            /*禁用函数*/
             pointer-events: none !important;
         }
         .disabled a {
@@ -135,9 +137,9 @@
 <!--大框架-->
 <div style="width: 1190px;margin: 0 auto;margin-top: 10px" id="userinformation">
     <div class="grid-content" style="background-color:rgba(255,255,255,0.8);">
-<!--        用户菜单-->
+        <!--        用户菜单-->
         <table id="usermenu" hidden>
-<!--            按钮-->
+            <!--            按钮-->
             <tr class="usersetchangebtn">
                 <td colspan="2">
                     <button id="userinfobtn">
@@ -155,18 +157,18 @@
                 </td>
             </tr>
         </table>
-<!--        用户信息-->
+        <!--        用户信息-->
         <table class="usertable" id="basictable" style="margin: 10px">
             <tr>
                 <td>
                     头像:
-<!--                    通过:src的方式调用vue中的数据,:是v-bind:的缩写-->
+                    <!--                    通过:src的方式调用vue中的数据,:是v-bind:的缩写-->
                     <img :src="'/resource/img/upload/'+user.img" style="width: 100px;height: 100px;">
                 </td>
             </tr>
             <tr>
                 <td id="getuid">
-<!--                    通过user.uid的方式调用vue中的数据-->
+                    <!--                    通过user.uid的方式调用vue中的数据-->
                     uid:{{user.uid}}
                 </td>
                 <td>
@@ -204,7 +206,7 @@
                 </td>
             </tr>
         </table>
-<!--        修改用户信息的表格,默认是隐藏的,只有点了用户设置的按钮才会显示,同时把其他的表格隐藏-->
+        <!--        修改用户信息的表格,默认是隐藏的,只有点了用户设置的按钮才会显示,同时把其他的表格隐藏-->
         <table class="usertable" id="setpage" style="margin: 10px" hidden>
             <tr>
                 <td>
@@ -266,6 +268,7 @@
                 <tr>
                     <td class="collecttd">
                         <div class="collectp">
+<!--                            :是v-bind:的缩写-->
                             <a :href="'/Posts/'+c.pid+'?page=1'" style="color: black">{{c.title}}</a>
                         </div>
                     </td>
@@ -273,26 +276,26 @@
             </table>
             <ul class="pagination" style="height: 40px"></ul>
         </div>
-<!--消息的表格,默认是隐藏的,只有点了用户消息的按钮才会显示,同时把其他的表格隐藏-->
+        <!--消息的表格,默认是隐藏的,只有点了用户消息的按钮才会显示,同时把其他的表格隐藏-->
         <div id="msgtable" hidden>
-        <table v-for="m in messagelist">
-            <tr>
-                <td class="collecttd">
-                    <div class="collectp">
+            <table v-for="m in messagelist">
+                <tr>
+                    <td class="collecttd">
+                        <div class="collectp">
                         <span v-if="m.uid!=10">
                             <a :href="'/user/msg/'+m.whoreplyuid">{{m.username}}</a>
                         </span>
-                        {{m.msg}}
-                        <span v-if="m.uid!=10">
+                            {{m.msg}}
+                            <span v-if="m.uid!=10">
                             <a :href="'/Posts/'+m.pid+'?page=1'">{{m.title}}</a>
                         </span>
-                    </div>
-                </td>
-            </tr>
-        </table>
-<!--            分页-->
-        <ul class="pagination" style="height: 40px"></ul>
-<!--            发布公告按钮,v-if设置只有管理员才能看到此按钮-->
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <!--            分页-->
+            <ul class="pagination" style="height: 40px"></ul>
+            <!--            发布公告按钮,v-if设置只有管理员才能看到此按钮-->
             <button  v-if="user.ugid==1" id="sendpublicmsg">发布公告</button>
         </div>
     </div>
@@ -300,7 +303,7 @@
 </div>
 
 <script>
-<!--  $(document).ready dom加载完毕之后才执行下边的  -->
+    <!--  $(document).ready dom加载完毕之后才执行下边的  -->
     $(document).ready(function () {
         //上边的四个按钮,点击时会显现点击的那个并且隐藏其他的
         $("#userinfobtn").click(function () {
@@ -330,7 +333,7 @@
                 v.messagelist = resp.data
                 //控制台打印返回结果
                 console.log(resp.data)
-            //    catch捕捉错误,报错弹窗
+                //    catch捕捉错误,报错弹窗
             }).catch(function (error) {
                 console.log(error)
                 //弹窗
@@ -512,29 +515,6 @@
                     })
                 }
             })
-        }).then(function (response) {
-            console.log(response.data.msg)
-            if (response.data.msg == "修改成功") {
-                //1秒后刷新
-                setTimeout("location.reload(true)", 1000)
-                Swal.fire(
-                    {
-                        icon: 'success',
-                        title: response.data.msg,
-                        showConfirmButton: false,
-                        timer: 2000
-                    }
-                )
-            } else {
-                Swal.fire(
-                    {
-                        icon: 'error',
-                        title: response.data.msg,
-                        showConfirmButton: false,
-                        timer: 2000
-                    }
-                )
-            }
         })
         //修改邮箱的功能
         $("#changeemailbtn").click(function () {
@@ -789,7 +769,7 @@
 
 
     })
-//创建vue对象
+    //创建vue对象
     const {createApp} = Vue
     v = createApp({
         data() {
@@ -891,7 +871,7 @@
                 })
             })
         }
-    //    绑定id为userinformation的div
+        //    绑定id为userinformation的div
     }).mount('#userinformation')
 </script>
 </body>

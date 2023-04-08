@@ -3,7 +3,9 @@ package tech.aaaaaa.user;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import tech.aaaaaa.mapper.UserMapper;
+import tech.aaaaaa.pojo.User;
 import tech.aaaaaa.util.CheckCodeUtil;
+import tech.aaaaaa.util.PasswordsaltUtil;
 import tech.aaaaaa.util.SqlSessionFactoryUtils;
 
 import javax.servlet.*;
@@ -24,6 +26,10 @@ public class loginServlet extends HttpServlet {
         String username = request.getParameter("username");
         String upassword = request.getParameter("upassword");
         PrintWriter writer = response.getWriter();
+        User user = userMapper.selectuserbyusername(username);
+        System.out.println("md5密码"+upassword);
+        upassword = PasswordsaltUtil.password(upassword,user);
+        System.out.println("加盐后密码"+upassword);
         Integer uid = userMapper.login(username,upassword);
         if (uid!=null){
             Cookie uidcookie = new Cookie("uid",Integer.toString(uid));

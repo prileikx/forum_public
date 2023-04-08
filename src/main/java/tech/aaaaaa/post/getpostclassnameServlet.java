@@ -10,7 +10,7 @@ import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
 import java.io.PrintWriter;
-
+//根据英文名称获得帖子分区中文名称
 @WebServlet(name = "getpostclassnameServlet", value = "/getpostclassnameServlet")
 public class getpostclassnameServlet extends HttpServlet {
     @Override

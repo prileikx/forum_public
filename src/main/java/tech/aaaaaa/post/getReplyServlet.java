@@ -7,6 +7,7 @@ import tech.aaaaaa.mapper.*;
 import tech.aaaaaa.pojo.Posts;
 import tech.aaaaaa.pojo.Reply;
 import tech.aaaaaa.pojo.User;
+import tech.aaaaaa.util.CheckloginStatusUtil;
 import tech.aaaaaa.util.SqlSessionFactoryUtils;
 
 import javax.servlet.*;
@@ -16,7 +17,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-
+//获取某帖子下的回复
 @WebServlet(name = "getReplyServlet", value = "/getReplyServlet")
 public class getReplyServlet extends HttpServlet {
     @Override
@@ -29,26 +30,14 @@ public class getReplyServlet extends HttpServlet {
         page = Integer.valueOf(request.getParameter("page"));
         System.out.println(page);
         ReplyMapper replyMapper = sqlSession.getMapper(ReplyMapper.class);
-        Cookie[] cookies = request.getCookies();
-        String uid = null;
-        String verifycode = null;
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                String name = cookie.getName();
-                if (name.equals("uid")) {
-                    uid = cookie.getValue();
-                } else if (name.equals("verifycode")) {
-                    verifycode = cookie.getValue();
-                }
-            }
-        }
+        Integer uid = CheckloginStatusUtil.CheckloginStatus(request);
         Integer limits = 0;
-        if (uid == null || verifycode == null) {
+        if (uid < 0) {
             //默认不登录状态下权限为50
             limits = 50;
         } else {
             UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
-            User user = userMapper.selectuser(Integer.parseInt(uid), verifycode);
+            User user = userMapper.selectuserbyuid(uid);
             if (user != null) {
                 UserGroupMapper userGroupMapper = sqlSession.getMapper(UserGroupMapper.class);
                 limits = userGroupMapper.selectUserLimits(user.getUgid());

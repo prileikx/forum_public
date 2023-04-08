@@ -8,14 +8,18 @@ import tech.aaaaaa.mapper.CaptchaMapper;
 import tech.aaaaaa.mapper.UserMapper;
 import tech.aaaaaa.util.CheckCodeUtil;
 import tech.aaaaaa.util.CheckEmailFormatUtil;
+import tech.aaaaaa.util.SendMailUtil;
 import tech.aaaaaa.util.SqlSessionFactoryUtils;
 
+import javax.mail.MessagingException;
 import javax.servlet.*;
 import javax.servlet.annotation.*;
 import javax.servlet.http.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.security.GeneralSecurityException;
+
 //发送注册邮件
 @WebServlet(name = "sendregisteremailServlet", value = "/sendregisteremailServlet")
 public class sendregisteremailServlet extends HttpServlet {
@@ -25,37 +29,29 @@ public class sendregisteremailServlet extends HttpServlet {
         request.getParameter("email");
         SqlSessionFactory sqlSessionFactory= SqlSessionFactoryUtils.getSqlSessionFactory();
         SqlSession sqlSession=sqlSessionFactory.openSession(true);
-        UserMapper User = sqlSession.getMapper(UserMapper.class);
-        CaptchaMapper captchaMapper = sqlSession.getMapper(CaptchaMapper.class);
         String email = request.getParameter("email");
         PrintWriter writer = response.getWriter();
-        if(CheckEmailFormatUtil.isEmail(email)){
-            if(User.checkUserEmailIfWasRegister(email)==0){
-                Integer checksendtime = captchaMapper.checksendtime(email);
-                if (checksendtime==null)//检查距离上次发送验证码的时间,返回为null说明该邮箱从未发送过验证码,返回数字即为距离上次发送的时间间隔(秒数),300即为5分钟
-                {
-                    String verifycode = CheckCodeUtil.generateVerifyCode(4);
-                    captchaMapper.insertsendemail(email,verifycode);
-                    writer.print("{\"msg\":\"验证码发送成功\"}");
-                }
-                else{
-                    //间隔时间
-                    if (checksendtime>=60){
-                        String verifycode = CheckCodeUtil.generateVerifyCode(4);
-                        captchaMapper.updatesendemail(email,verifycode);
-                        writer.print("{\"msg\":\"验证码发送成功\"}");
-                    }
-                    else {
-                        writer.print("{\"msg\":\"距离上次发送时间过短,请隔段时间后重试\"}");
-                    }
-                }
-
-            } else {
-                    writer.print("{\"msg\":\"邮箱已被注册\"}");
+        UserMapper User = sqlSession.getMapper(UserMapper.class);
+        if(User.checkUserEmailIfWasRegister(email)==0){
+            Integer sendmailbool = null;
+            try {
+                sendmailbool = SendMailUtil.SendMailUtilWithVerifycode(email,"论坛注册验证邮件","您正在注册论坛网站,您的验证码为:");
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            } catch (GeneralSecurityException e) {
+                throw new RuntimeException(e);
             }
+            System.out.println("send="+sendmailbool);
+            if(sendmailbool>0){
+            writer.print("{\"msg\":\"验证码发送成功,如果未收到请检查垃圾邮件箱\"}");
         }
-        else {
+        else if(sendmailbool == -1){
+            writer.print("{\"msg\":\"距离上次发送时间过短,请隔段时间后重试\"}");
+        }else if(sendmailbool == -2){
             writer.print("{\"msg\":\"邮箱格式不正确\"}");
+        }
+        } else {
+            writer.print("{\"msg\":\"邮箱已被注册\"}");
         }
         sqlSession.close();
         writer.flush();

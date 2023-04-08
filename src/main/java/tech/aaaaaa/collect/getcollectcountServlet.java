@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-
+//获取用户收藏总数量
 @WebServlet(name = "getcollectcountServlet", value = "/getcollectcountServlet")
 public class getcollectcountServlet extends HttpServlet {
     @Override

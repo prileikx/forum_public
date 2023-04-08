@@ -9,6 +9,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import tech.aaaaaa.mapper.UserMapper;
 import tech.aaaaaa.pojo.User;
+import tech.aaaaaa.util.CheckloginStatusUtil;
 import tech.aaaaaa.util.SqlSessionFactoryUtils;
 
 import javax.servlet.*;
@@ -39,23 +40,11 @@ public class uploadServlet extends HttpServlet {
         SqlSession sqlSession = sqlSessionFactory.openSession(true);
         UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
         PrintWriter writer = response.getWriter();
-        Cookie[] cookies = request.getCookies();
-        String uid = null;
-        String verifycode = null;
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                String name = cookie.getName();
-                if (name.equals("uid")) {
-                    uid = cookie.getValue();
-                } else if (name.equals("verifycode")) {
-                    verifycode = cookie.getValue();
-                }
-            }
-        }
-        if (uid == null || verifycode == null) {
+        Integer uid = CheckloginStatusUtil.CheckloginStatus(request);
+        if (uid < 0) {
             writer.print("{\"msg\":\"用户验证错误,请重新登陆\"}");
         } else {
-            User user = userMapper.selectuser(Integer.parseInt(uid), verifycode);
+            User user = userMapper.selectuserbyuid(uid);
             if (user != null) {
                 String username = user.getUsername();
                 //判断上传的表单是普通表单还是带文件表单

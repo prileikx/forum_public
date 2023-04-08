@@ -9,7 +9,7 @@ import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
 import java.io.PrintWriter;
-
+//版区重定向
 @WebServlet(name = "PostClassServlet", value = "/PostClass/*")
 public class PostClassServlet extends HttpServlet {
     @Override

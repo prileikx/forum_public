@@ -85,6 +85,15 @@
         select *
         from user where uid = #{uid};
     </select>
+    <select id="selectuidbyusername" resultType="tech.aaaaaa.pojo.User">
+        select *
+        from user
+where username=#{username};
+    </select>
+    <select id="selectuserbyusername" resultType="tech.aaaaaa.pojo.User">
+        select *
+        from user where username=#{username};
+    </select>
 
 
 </mapper>

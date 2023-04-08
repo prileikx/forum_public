@@ -6,6 +6,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import tech.aaaaaa.mapper.*;
 import tech.aaaaaa.pojo.Message;
 import tech.aaaaaa.pojo.User;
+import tech.aaaaaa.util.CheckloginStatusUtil;
 import tech.aaaaaa.util.SqlSessionFactoryUtils;
 
 import javax.servlet.*;
@@ -15,7 +16,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-
+//获得用户消息列表
 @WebServlet(name = "getMessageListServlet", value = "/getMessageListServlet")
 public class getMessageListServlet extends HttpServlet {
     @Override
@@ -24,21 +25,10 @@ public class getMessageListServlet extends HttpServlet {
         SqlSessionFactory sqlSessionFactory = SqlSessionFactoryUtils.getSqlSessionFactory();
         SqlSession sqlSession = sqlSessionFactory.openSession(true);
         PrintWriter writer = response.getWriter();
-        Cookie[] cookies = request.getCookies();
-        String uid = null;
-        String verifycode = null;
+        Integer uid = CheckloginStatusUtil.CheckloginStatus(request);
         List<Message> empryMessageList = new ArrayList<>();
         Message emptyMessage = new Message();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                String name = cookie.getName();
-                if (name.equals("uid")) {
-                    uid = cookie.getValue();
-                } else if (name.equals("verifycode")) {
-                    verifycode = cookie.getValue();
-                }
-            }
-        } else {
+        if(uid < 0){
             emptyMessage.setMsg("登陆状态错误,请重新登录");
             empryMessageList.add(emptyMessage);
             String emptymessageListjson = JSON.toJSONString(empryMessageList);
@@ -47,7 +37,7 @@ public class getMessageListServlet extends HttpServlet {
             return;
         }
         UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
-        User user = userMapper.selectuser(Integer.valueOf(uid), verifycode);
+        User user = userMapper.selectuserbyuid(uid);
         if (user == null) {
             emptyMessage.setMsg("登陆状态错误,请重新登录");
             empryMessageList.add(emptyMessage);

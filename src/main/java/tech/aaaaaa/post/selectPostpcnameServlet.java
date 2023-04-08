@@ -13,7 +13,7 @@ import javax.servlet.annotation.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
-
+//获取帖子版区名称
 @WebServlet(name = "selectPostpcnameServlet", value = "/selectPostpcnameServlet")
 public class selectPostpcnameServlet extends HttpServlet {
     @Override

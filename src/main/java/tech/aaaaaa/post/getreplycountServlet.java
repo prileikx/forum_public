@@ -5,6 +5,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import tech.aaaaaa.mapper.*;
 import tech.aaaaaa.pojo.Reply;
 import tech.aaaaaa.pojo.User;
+import tech.aaaaaa.util.CheckloginStatusUtil;
 import tech.aaaaaa.util.SqlSessionFactoryUtils;
 
 import javax.servlet.*;
@@ -12,7 +13,7 @@ import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
 import java.io.PrintWriter;
-
+//获取某帖子回复总数量
 @WebServlet(name = "getreplycountServlet", value = "/getreplycountServlet")
 public class getreplycountServlet extends HttpServlet {
     @Override
@@ -25,25 +26,13 @@ public class getreplycountServlet extends HttpServlet {
         Integer pid = Integer.valueOf(request.getParameter("pid"));
         PostMapper postMapper=sqlSession.getMapper(PostMapper.class);
         Integer pcid = postMapper.selectpcid(pid);
-        Cookie[] cookies = request.getCookies();
-        String uid = null;
-        String verifycode = null;
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                String name = cookie.getName();
-                if (name.equals("uid")) {
-                    uid = cookie.getValue();
-                } else if (name.equals("verifycode")) {
-                    verifycode = cookie.getValue();
-                }
-            }
-        }
+        Integer uid = CheckloginStatusUtil.CheckloginStatus(request);
         Integer limits = 0;
-        if (uid == null || verifycode == null) {
+        if (uid < 0) {
             limits = 50;
         } else {
             UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
-            User user = userMapper.selectuser(Integer.parseInt(uid), verifycode);
+            User user = userMapper.selectuserbyuid(uid);
             if (user != null) {
                 UserGroupMapper userGroupMapper = sqlSession.getMapper(UserGroupMapper.class);
                 limits = userGroupMapper.selectUserLimits(user.getUgid());

@@ -4,6 +4,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import tech.aaaaaa.mapper.UserMapper;
 import tech.aaaaaa.pojo.User;
+import tech.aaaaaa.util.CheckloginStatusUtil;
 import tech.aaaaaa.util.SqlSessionFactoryUtils;
 
 import javax.servlet.*;
@@ -11,7 +12,7 @@ import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
 import java.io.PrintWriter;
-
+//修改用户简介
 @WebServlet(name = "changedescribeServlet", value = "/changedescribeServlet")
 public class changedescribeServlet extends HttpServlet {
     @Override
@@ -20,24 +21,12 @@ public class changedescribeServlet extends HttpServlet {
         SqlSessionFactory sqlSessionFactory = SqlSessionFactoryUtils.getSqlSessionFactory();
         SqlSession sqlSession = sqlSessionFactory.openSession(true);
         PrintWriter writer = response.getWriter();
-        Cookie[] cookies = request.getCookies();
-        String uid = null;
-        String verifycode = null;
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                String name = cookie.getName();
-                if (name.equals("uid")) {
-                    uid = cookie.getValue();
-                } else if (name.equals("verifycode")) {
-                    verifycode = cookie.getValue();
-                }
-            }
-        }
-        if (uid == null || verifycode == null) {
+        Integer uid = CheckloginStatusUtil.CheckloginStatus(request);
+        if (uid < 0) {
             writer.print("{\"msg\":\"用户登录状态验证错误,请重新登录\"}");
         } else {
             UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
-            User user = userMapper.selectuser(Integer.parseInt(uid), verifycode);
+            User user = userMapper.selectuserbyuid(uid);
             if (user != null) {
                 String describe = request.getParameter("describe");
                 userMapper.updatedescribe(Integer.valueOf(uid),describe);

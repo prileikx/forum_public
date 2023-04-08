@@ -5,6 +5,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import tech.aaaaaa.mapper.*;
 import tech.aaaaaa.pojo.Posts;
 import tech.aaaaaa.pojo.User;
+import tech.aaaaaa.util.CheckloginStatusUtil;
 import tech.aaaaaa.util.SqlSessionFactoryUtils;
 
 import javax.servlet.*;
@@ -12,7 +13,7 @@ import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
 import java.io.PrintWriter;
-
+//管理员发送公告
 @WebServlet(name = "sendpublicmsgServlet", value = "/sendpublicmsgServlet")
 public class sendpublicmsgServlet extends HttpServlet {
     @Override
@@ -22,26 +23,15 @@ public class sendpublicmsgServlet extends HttpServlet {
         SqlSession sqlSession = sqlSessionFactory.openSession(true);
         PrintWriter writer = response.getWriter();
         PostMapper postMapper=sqlSession.getMapper(PostMapper.class);
-        Cookie[] cookies = request.getCookies();
-        String uid = null;
-        String verifycode = null;
-        if(cookies!=null){
-            for (Cookie cookie:cookies){
-                String name = cookie.getName();
-                if (name.equals("uid")){
-                    uid = cookie.getValue();
-                } else if (name.equals("verifycode")) {
-                    verifycode = cookie.getValue();
-                }
-            }
-        }else
+        Integer uid = CheckloginStatusUtil.CheckloginStatus(request);
+        if(uid < 0)
         {
             writer.print("{\"msg\":\"登录状态错误,请重新登录\"}");
             sqlSession.close();
             return;
         }
         UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
-        User user = userMapper.selectuser(Integer.valueOf(uid),verifycode);
+        User user = userMapper.selectuserbyuid(uid);
         if (user == null){
             writer.print("{\"msg\":\"登陆状态错误,请重新登录\"}");
         }

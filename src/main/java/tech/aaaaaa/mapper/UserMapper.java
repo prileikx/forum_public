@@ -7,11 +7,17 @@ import javax.swing.*;
 import java.util.List;
 
 public interface UserMapper {
+    //检查用户名是否可以被使用
     Integer checkusernameifcanbeuse(@Param("username")String username);
+    //检查邮箱是否被注册
     Integer checkUserEmailIfWasRegister(@Param("email")String email);
+    //添加用户
     Integer adduser(@Param("username")String username,@Param("upassword")String upassword,@Param("email")String email);
+    //检查邮箱是否被注册
     Integer checkemailifwasregister(@Param("email")String email);
+    //登录
     Integer login(@Param("username")String username,@Param("upassword")String upassword);
+    //添加用户验证信息cookie
     void addloginverify(@Param("uid")Integer uid,@Param("verify")String verify);
     //查询用户
     User selectuser(@Param("uid")Integer uid,@Param("verify")String verify);
@@ -33,6 +39,8 @@ public interface UserMapper {
     void updateusername(@Param("uid")Integer uid,@Param("username")String username);
     //修改简介
     void updatedescribe(@Param("uid")Integer uid,@Param("describe")String describe);
-    //修改密码后删除verify
+    //(修改密码后)删除verify
     void updateverify(@Param("uid")Integer uid);
+    //凭借用户名获取uid
+    User selectuserbyusername(@Param("username")String username);
 }

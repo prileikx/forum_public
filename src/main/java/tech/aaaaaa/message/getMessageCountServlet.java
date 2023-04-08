@@ -7,6 +7,7 @@ import tech.aaaaaa.mapper.MessageMapper;
 import tech.aaaaaa.mapper.UserMapper;
 import tech.aaaaaa.pojo.Message;
 import tech.aaaaaa.pojo.User;
+import tech.aaaaaa.util.CheckloginStatusUtil;
 import tech.aaaaaa.util.SqlSessionFactoryUtils;
 
 import javax.servlet.*;
@@ -16,7 +17,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-
+//获得用户消息计数
 @WebServlet(name = "getMessageCountServlet", value = "/getMessageCountServlet")
 public class getMessageCountServlet extends HttpServlet {
     @Override
@@ -25,27 +26,14 @@ public class getMessageCountServlet extends HttpServlet {
         SqlSessionFactory sqlSessionFactory = SqlSessionFactoryUtils.getSqlSessionFactory();
         SqlSession sqlSession = sqlSessionFactory.openSession(true);
         PrintWriter writer = response.getWriter();
-        Cookie[] cookies = request.getCookies();
-        String uid = null;
-        String verifycode = null;
-        List<Message> empryMessageList = new ArrayList<>();
-        Message emptyMessage = new Message();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                String name = cookie.getName();
-                if (name.equals("uid")) {
-                    uid = cookie.getValue();
-                } else if (name.equals("verifycode")) {
-                    verifycode = cookie.getValue();
-                }
-            }
-        } else {
+        Integer uid = CheckloginStatusUtil.CheckloginStatus(request);
+        if(uid < 0){
             writer.print("{\"msgtotalcount\":\"" + 1 + "\"}");
             sqlSession.close();
             return;
         }
         UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
-        User user = userMapper.selectuser(Integer.valueOf(uid), verifycode);
+        User user = userMapper.selectuserbyuid(uid);
         if (user == null) {
             writer.print("{\"msgtotalcount\":\"" + 1 + "\"}");
         } else {
