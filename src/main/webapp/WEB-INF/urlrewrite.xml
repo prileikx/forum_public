@@ -21,6 +21,10 @@
         <to type="forward">/index.html</to>
     </rule>
     <rule>
+        <from>^/user/findpassword$</from>
+        <to type="forward">/user/findpassword.html</to>
+    </rule>
+    <rule>
         <from>^/user/register$</from>
         <to type="forward">/user/register.html</to>
     </rule>

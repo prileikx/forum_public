@@ -16,7 +16,7 @@
 
     <select id="replyList" resultType="tech.aaaaaa.pojo.Reply">
         select reply.*,user.username,user.img
-        from reply join user on user.uid = reply.uid where pid=#{pid} limit #{start},10;
+        from reply join user on user.uid = reply.uid where pid=#{pid} order by rid limit #{start},10;
     </select>
     <select id="selectreplycount" resultType="java.lang.Integer">
         select count(*)

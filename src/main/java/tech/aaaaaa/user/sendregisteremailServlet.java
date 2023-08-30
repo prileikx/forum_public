@@ -1,5 +1,6 @@
 package tech.aaaaaa.user;
 
+import jakarta.mail.MessagingException;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -11,10 +12,10 @@ import tech.aaaaaa.util.CheckEmailFormatUtil;
 import tech.aaaaaa.util.SendMailUtil;
 import tech.aaaaaa.util.SqlSessionFactoryUtils;
 
-import javax.mail.MessagingException;
-import javax.servlet.*;
-import javax.servlet.annotation.*;
-import javax.servlet.http.*;
+
+import jakarta.servlet.*;
+import jakarta.servlet.annotation.*;
+import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -36,9 +37,9 @@ public class sendregisteremailServlet extends HttpServlet {
             Integer sendmailbool = null;
             try {
                 sendmailbool = SendMailUtil.SendMailUtilWithVerifycode(email,"论坛注册验证邮件","您正在注册论坛网站,您的验证码为:");
-            } catch (MessagingException e) {
-                throw new RuntimeException(e);
             } catch (GeneralSecurityException e) {
+                throw new RuntimeException(e);
+            } catch (MessagingException e) {
                 throw new RuntimeException(e);
             }
             System.out.println("send="+sendmailbool);

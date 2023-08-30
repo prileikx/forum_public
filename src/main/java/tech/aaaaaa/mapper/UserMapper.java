@@ -27,6 +27,8 @@ public interface UserMapper {
     Integer uploadimg(@Param("img")String img,@Param("uid")Integer uid);
     //凭借uid查询所有信息
     User selectuserbyuid(@Param("uid")Integer uid);
+    //凭借email查询用户
+    User selectuserbyemail(@Param("email")String email);
     //添加发帖数计数
     void updatpostecount(@Param("uid")Integer uid);
     //添加回复计数

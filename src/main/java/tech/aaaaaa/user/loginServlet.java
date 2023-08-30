@@ -8,9 +8,9 @@ import tech.aaaaaa.util.CheckCodeUtil;
 import tech.aaaaaa.util.PasswordsaltUtil;
 import tech.aaaaaa.util.SqlSessionFactoryUtils;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.servlet.annotation.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
+import jakarta.servlet.annotation.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 //登录
@@ -27,9 +27,18 @@ public class loginServlet extends HttpServlet {
         String upassword = request.getParameter("upassword");
         PrintWriter writer = response.getWriter();
         User user = userMapper.selectuserbyusername(username);
-        System.out.println("md5密码"+upassword);
+        if (user==null){
+            user = userMapper.selectuserbyemail(username);
+        }
+        if (user==null){
+            writer.print("{\"msg\":\"用户名或密码错误\"}");
+            sqlSession.close();
+            writer.flush();
+            writer.close();
+            return;
+        }
+        username=user.getUsername();
         upassword = PasswordsaltUtil.password(upassword,user);
-        System.out.println("加盐后密码"+upassword);
         Integer uid = userMapper.login(username,upassword);
         if (uid!=null){
             Cookie uidcookie = new Cookie("uid",Integer.toString(uid));

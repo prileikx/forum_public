@@ -94,6 +94,9 @@ where username=#{username};
         select *
         from user where username=#{username};
     </select>
+    <select id="selectuserbyemail" resultType="tech.aaaaaa.pojo.User">
+        select * from user where email=#{email};
+    </select>
 
 
 </mapper>

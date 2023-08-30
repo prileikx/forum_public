@@ -6,12 +6,16 @@
   <script src="/js/axios.min.js"></script>
 <!--  <script src="/js/jquery-3.0.0.js"></script>-->
   <script src="/js/sweetalert2.all.min.js"></script>
-  <script src="/js/jquery-3.0.0.js"></script>
   <!--    调用cookie用的js-->
   <script src="/js/jquery.cookie.js"></script>
+  <script src="/bootstrap-5.3.0-alpha1-dist/js/bootstrap.min.js"></script>
   <!--    轻量级css样式-->
-  <link rel="stylesheet" href="/css/picnic.css">
+<!--  <link rel="stylesheet" href="/css/picnic.css">-->
+  <link rel="stylesheet" href="/bootstrap-5.3.0-alpha1-dist/css/bootstrap.min.css">
   <style>
+    a{
+      text-decoration: none;
+    }
     #app{
       background-color: rgba(255,255,255,0.8);
     }
@@ -81,14 +85,34 @@
       background-image: url('/resource/img/background.jpg');
       background-attachment: fixed;
     }
+    .btn {
+      border-radius: 0;
+      outline: none;
+    }
+
+    　　.btn.active.focus,
+    　　.btn.active:focus,
+    　　.btn:active.focus,.btn:active:focus,.btn:focus,btn:active,btn:hover{
+      outline: none;
+      box-shadow: none;
+    }
+
+    .dropdown-menu {
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .form-control {
+      border-radius: 0;
+    }
   </style>
     <title>header</title>
 </head>
 <body>
 <div id="app">
-<div style="width: 100%;border-bottom: #aaaaaa solid 1px;height: 50px;">
-<div style="width: 1190px;margin: 0 auto" id="menubtnadiv">
-  <a href="/index">
+<div style="border-bottom: #aaaaaa solid 1px;height: 50px;">
+<div class="container" style="margin: 0 auto;height: 100px;padding: 0px;max-width: 1140px" id="menubtnadiv">
+  <a href="/index.html">
   <div class="headerbtn leftbtn">
     首页
   </div>
@@ -102,7 +126,7 @@
 <!--  <div class="headerbtn leftbtn">-->
 <!--    消息-->
 <!--  </div>-->
-  <a href="/search">
+  <a href="/search.html">
   <div class="headerbtn leftbtn">
     搜索
   </div>
@@ -114,7 +138,7 @@
       登录/注册
   </div>
   </a>
-  <div style="width: 1190px;margin: 0 auto;position: absolute;top: 50px">
+  <div class="container" style="margin: 0 auto;top: 50px;position:absolute;max-width: 1140px;padding:0px;z-index: 10">
     <div id="menu">
       <a href="/user/msg/" id="apersonal"><div class="menubtn">个人主页</div></a>
 <!--      <a href="/user/msg/" id="auserset"><div class="menubtn">用户设置</div></a>-->

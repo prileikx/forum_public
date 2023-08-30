@@ -1,7 +1,7 @@
 package tech.aaaaaa.web.filter;
 
-import javax.servlet.*;
-import javax.servlet.annotation.WebFilter;
+import jakarta.servlet.*;
+import jakarta.servlet.annotation.WebFilter;
 import java.io.IOException;
 @WebFilter("/user/msg")
 public class usermsgFilter implements Filter {

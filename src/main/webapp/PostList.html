@@ -9,7 +9,9 @@
     <script src="/js/sha1.min.js"></script>
     <script src="/js/jq-paginator.min.js"></script>
     <script src="/js/tinymce/tinymce.min.js"></script>
-    <link rel="stylesheet" href="/css/picnic.css">
+    <script src="/bootstrap-5.3.0-alpha1-dist/js/bootstrap.min.js"></script>
+<!--    <link rel="stylesheet" href="/css/picnic.css">-->
+    <link rel="stylesheet" href="/bootstrap-5.3.0-alpha1-dist/css/bootstrap.min.css">
     <script src="/js/postlist.js"></script>
 <!--    <link rel="stylesheet" href="/css/bootstrap.min.css">-->
 <!--    注释参考POSTContent.html-->
@@ -80,10 +82,9 @@
     })
 </script>
 
-<div style="width: 1190px;margin: 0 auto" id="postclasslist">
-    <div style="width: 880px;display: inline-block;margin-top: 10px;">
-        <div class="flex one">
-            <div v-for="post in postlist">
+<div class="container" style="margin: 0 auto" id="postclasslist">
+    <div class="col-9" style="display: inline-block;margin-top: 10px;">
+            <div v-for="post in postlist" style="margin-bottom: 10px">
                 <div style="background-color:rgba(255,255,255,0.8);">
                     <a :href="'/Posts/'+post.pid+'?page=1'" style="color: black;">
                         <div class="postclassdiv">
@@ -101,21 +102,22 @@
                 </div>
             </div>
             <ul class="pagination"></ul>
-            <input type="text" id="newposttitle" v-model="title" placeholder="输入标题,3-50个字之间" minlength="3"
-                   maxlength="50" style="margin-left: 10px;margin-bottom: 10px">
-            <textarea id="tinydemo" style="margin-left: 10px;" placeholder="输入帖子内容,最少五个字符"
+            <input class="col-12" type="text" id="newposttitle" v-model="title" placeholder="输入标题,3-50个字之间" minlength="3"
+                   maxlength="50" style="margin-bottom: 10px">
+            <textarea class="col-12" id="tinydemo" style="margin-left: 10px;" placeholder="输入帖子内容,最少五个字符"
                       minlength="5"></textarea>
-            <button id="newpost" style="margin-left: 10px" @click="sendpost" class="success">发送帖子</button>
-        </div>
+            <button id="newpost" style="margin-top: 10px" @click="sendpost" class="col-12 btn btn-info">发送帖子</button>
     </div>
-    <div style="min-height: 300px;background-color:rgba(255,255,255,0.8);display: inline-block;margin-top: 10px;float: right;width: 300px;margin-left: 10px;text-align: left;">
-        <div style="margin: 10px">
-            <p>1.请不要发无意义帖子</p>
-            <p>2.勿发广告</p>
-            <p>3.请勿对他人进行辱骂或人身攻击等,文明交流</p>
-            <p>4.遇到违规帖子请举报,管理员会进行处理</p>
-            <p>5.如果对网站有任何建议请联系站长</p>
-            <p>6.发帖请遵守国家法律法规,禁止发黄赌毒相关</p>
+    <div class="col-3" style="min-height: 300px;display: inline-block;float: right;padding-left: 10px;text-align: left;">
+        <div style="background-color:rgba(255,255,255,0.8);">
+            <div style="margin: 10px">
+                <p>1.请不要发无意义帖子</p>
+                <p>2.勿发广告</p>
+                <p>3.请勿对他人进行辱骂或人身攻击等,文明交流</p>
+                <p>4.遇到违规帖子请举报,管理员会进行处理</p>
+                <p>5.如果对网站有任何建议请联系站长</p>
+                <p>6.发帖请遵守国家法律法规,禁止发违法内容</p>
+            </div>
         </div>
     </div>
 </div>
@@ -169,7 +171,7 @@
                 } else if (tinyMCE.activeEditor.getContent().length < 5) {
                     Swal.fire({
                         icon: 'error',
-                        title: "帖子内容不得少于5个字符",
+                        title: "帖子内容不得为空",
                         showConfirmButton: false,
                         timer: 1500
                     })

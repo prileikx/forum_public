@@ -7,9 +7,9 @@ import tech.aaaaaa.mapper.UserMapper;
 
 import com.sun.mail.util.MailSSLSocketFactory;
 
-import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.*;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 import java.security.GeneralSecurityException;
 import java.util.Properties;
 //发送邮件
@@ -57,17 +57,23 @@ public class SendMailUtil {
     public static Boolean SendMailtoUser(String userEmailAddress,String EmailTitle,String context) throws MessagingException, GeneralSecurityException {
         Properties prop = new Properties();//创建一封邮件
         //以下三项的Key的值都是固定的
-        prop.setProperty("mail.host","smtp.qq.com");//设置邮件服务器
+        prop.setProperty("mail.host","smtp.163.com");//设置邮件服务器
         prop.setProperty("mail.transport.protocol","smtp");//设置邮件发送协议
         prop.setProperty("mail.smtp.auth","true");//需要验证用户名和密码
 //        prop.put("mail.smtp.starttls.enable", "true");
         //显示debug信息
 //        prop.put("mail.debug", "true");
         //如果是QQ邮箱，还要设置SSL加密，加上以下代码即可，其他邮箱不需要
-//        MailSSLSocketFactory sf = new MailSSLSocketFactory();
-//        sf.setTrustAllHosts(true);
-//        prop.put("mail.smtp.ssl.enable","true");
-//        prop.put("mail.smtp.ssl.socketFactory",sf);
+        MailSSLSocketFactory sf = new MailSSLSocketFactory();
+        sf.setTrustAllHosts(true);
+        prop.put("mail.smtp.ssl.protocols", "TLSv1.2");
+        prop.put("mail.smtp.ssl.enable","true");
+        prop.put("mail.smtp.ssl.socketFactory",sf);
+//        prop.setProperty("mail.smtp.timeout", "5000");
+        prop.setProperty("mail.debug","true");
+        prop.setProperty("mail.smtp.socketFactory.port", "465");//设置ssl端口
+
+//        prop.setProperty("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
         //==========使用JavaMail发送邮件的6个步骤======
 
         //1、创建定义整个应用程序所需要的环境信息的Session对象

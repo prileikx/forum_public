@@ -12,9 +12,9 @@ import tech.aaaaaa.util.CheckEmailFormatUtil;
 import tech.aaaaaa.util.PasswordsaltUtil;
 import tech.aaaaaa.util.SqlSessionFactoryUtils;
 
-import javax.servlet.*;
-import javax.servlet.annotation.*;
-import javax.servlet.http.*;
+import jakarta.servlet.*;
+import jakarta.servlet.annotation.*;
+import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;

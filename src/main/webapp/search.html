@@ -10,12 +10,14 @@
     <script src="/js/sweetalert2.all.min.js"></script>
     <!--    sha1加密js-->
     <script src="/js/sha1.min.js"></script>
-    <!--    jquery写的分页js-->
-    <script src="/js/jq-paginator.min.js"></script>
     <!--    轮播图js-->
     <script src="/js/tinymce/tinymce.min.js"></script>
+    <!--    jquery写的分页js-->
+    <script src="/js/jq-paginator.min.js"></script>
+    <script src="/bootstrap-5.3.0-alpha1-dist/js/bootstrap.min.js"></script>
     <!--    轻量级css样式-->
-    <link rel="stylesheet" href="/css/picnic.css">
+<!--    <link rel="stylesheet" href="/css/picnic.css">-->
+    <link rel="stylesheet" href="/bootstrap-5.3.0-alpha1-dist/css/bootstrap.min.css">
     <style>
         .active>a{
             background-color: #ddd!important;
@@ -69,12 +71,11 @@
         .postremarks {
             font-size: 10px;
         }
-        #searchcontent{
-            width: 84%;
-            margin-left: 10px;
-        }
         #searchbtn{
             width: 15%;
+        }
+        #searchresult{
+            display: none;
         }
     </style>
     <title>搜索</title>
@@ -88,13 +89,14 @@
     })
 </script>
 
-<div style="width: 1190px;margin: 0 auto" id="postclasslist">
-    <div style="width: 1190px;display: inline-block;margin-top: 10px;">
-        <div class="flex one">
-            <input id="searchcontent">
-            <input type="button" value="搜索" id="searchbtn">
-            <div style="height: 10px;width: 1190px"></div>
-            <div v-for="post in postlist">
+<div class="container" style="max-width: 1140px;margin: 0 auto" id="postclasslist">
+    <div class="col-12" style="max-width: 1140px;display: inline-block;margin-top: 10px;">
+        <div class="col-12">
+            <input class="col-9" id="searchcontent">
+            <input class="col-3" type="button" value="搜索" id="searchbtn">
+            <div id="searchresult">
+            <div class="col-12" style="height: 10px;"></div>
+            <div v-for="post in postlist" style="margin-bottom: 10px">
                 <div style="background-color:rgba(255,255,255,0.8);">
                     <a :href="'/Posts/'+post.pid+'?page=1'" style="color: black;">
                         <div class="postclassdiv">
@@ -113,6 +115,7 @@
             </div>
 <!--            分页-->
             <ul class="pagination"></ul>
+            </div>
         </div>
     </div>
 </div>
@@ -130,6 +133,7 @@
                     showConfirmButton: false,
                     timer: 1500
                 })
+                $("#searchresult").hide()
             }else{
                 //搜索帖子,返回帖子列表
                 axios({
@@ -139,6 +143,7 @@
                 }).then(function (resp) {
                     v.postlist = resp.data
                     console.log(resp.data)
+                    $("#searchresult").show()
                 })
             }
             //查询结果的帖子总数量
@@ -169,6 +174,7 @@
                                 showConfirmButton: false,
                                 timer: 1500
                             })
+                            $("#searchresult").hide()
                         }else{
                             axios({
                                 method: "post",
@@ -177,6 +183,7 @@
                             }).then(function (resp) {
                                 v.postlist = resp.data
                                 console.log(resp.data)
+                                $("#searchresult").show()
                             })
                         }
                         }

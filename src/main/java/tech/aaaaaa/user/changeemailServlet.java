@@ -8,11 +8,12 @@ import tech.aaaaaa.mapper.UserMapper;
 import tech.aaaaaa.pojo.User;
 import tech.aaaaaa.util.CheckEmailFormatUtil;
 import tech.aaaaaa.util.CheckloginStatusUtil;
+import tech.aaaaaa.util.PasswordsaltUtil;
 import tech.aaaaaa.util.SqlSessionFactoryUtils;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.servlet.annotation.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
+import jakarta.servlet.annotation.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 //修改用户邮箱
@@ -32,6 +33,7 @@ public class changeemailServlet extends HttpServlet {
             User user = userMapper.selectuserbyuid(uid);
             if (user != null) {
                 String password = request.getParameter("password");
+                password = PasswordsaltUtil.password(password,user);
                 if(user.getUpassword().equals(password)) {
                     String email = request.getParameter("email");
                     if(CheckEmailFormatUtil.isEmail(email)){

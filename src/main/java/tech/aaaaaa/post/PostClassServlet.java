@@ -4,9 +4,9 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import tech.aaaaaa.util.SqlSessionFactoryUtils;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.servlet.annotation.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
+import jakarta.servlet.annotation.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 //版区重定向
@@ -14,7 +14,7 @@ import java.io.PrintWriter;
 public class PostClassServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.getRequestDispatcher("/PostList").forward(request,response);
+        request.getRequestDispatcher("/PostList.html").forward(request,response);
     }
 
     @Override

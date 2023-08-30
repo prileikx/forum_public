@@ -3,22 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <script src="../js/vue.global.js"></script>
-<!--    axios ajax方式发送post/get请求-->
+    <!--    axios ajax方式发送post/get请求-->
     <script src="../js/axios.min.js"></script>
     <script src="../js/jquery-3.0.0.js"></script>
-<!--    弹窗js-->
+    <!--    弹窗js-->
     <script src="../js/sweetalert2.all.min.js"></script>
-<!--    sha1加密js,用于密码加密-->
+    <!--    sha1加密js,用于密码加密-->
     <script src="../js/sha1.min.js"></script>
-    <link rel="stylesheet" href="../css/picnic.css">
+    <!--    <link rel="stylesheet" href="../css/picnic.css">-->
+    <script src="../bootstrap-5.3.0-alpha1-dist/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="../bootstrap-5.3.0-alpha1-dist/css/bootstrap.min.css">
     <style>
         td {
             text-align: center;
-            background: rgba(255,255,255,0.8);
+            background: rgba(255, 255, 255, 0.8);
         }
+
         input {
             width: 300px;
         }
+
         button {
             width: 300px;
         }
@@ -31,62 +35,70 @@
 <script>
     $("#header").load("../header.html")
 </script>
-<div class="flex center one demo" id="logindiv">
-    <div class="500" style="width: 500px;">
-<!--        表格-->
-        <table>
-            <tr>
-                <td colspan="2">
-                    登录
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    用户名:
-                </td>
-                <td>
-<!--                    输入用户名-->
-                    <input type="text" placeholder="用户名" v-model="username">
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    密码:
-                </td>
-                <td>
-<!--                    输入密码-->
-                    <input type="password" placeholder="密码6-16位" v-model="upassword">
-                </td>
-            </tr>
-            <tr>
-                <td></td>
-                <td>
-                    <label>
-<!--                        选择是否30天内自动登录,若不选择则登录状态只保留到关闭浏览器前-->
-                        <input type="checkbox" id="loginStatusSave">
-                        <span class="checkable">保存登录状态,30天内无需再次登录</span>
-                    </label>
-                </td>
-            </tr>
-            <tr>
-                <td></td>
-                <td>
-<!--                    click调用login函数-->
-                    <button @click="login" style="width: 300px;">登录</button>
-                </td>
-            </tr>
-            <tr>
-                <td></td>
-                <td>
-<!--                    跳转到注册页面-->
-                    <a href="/user/register.html">注册账号</a>
-                </td>
-            </tr>
-        </table>
+<div class="container" id="logindiv">
+    <div class="col-lg-3 col-xl-4 col-sm-2" style="display: inline-block"></div>
+    <div class="col-lg-6 col-xl-4 col-sm-8" style="display:inline-block;">
+        <div style="width: 100%;">
+            <!--        表格-->
+            <table class="col-12">
+                <tbody class="col-12">
+                <tr>
+                    <td colspan="2">
+                        登录
+                    </td>
+                </tr>
+                <tr>
+                    <td style="min-width: 80px">
+                        用户名:
+                    </td>
+                    <td>
+                        <!--                    输入用户名-->
+                        <input type="text" placeholder="用户名" v-model="username">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        密码:
+                    </td>
+                    <td>
+                        <!--                    输入密码-->
+                        <input type="password" placeholder="密码6-16位" v-model="upassword">
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <label>
+                            <!--                        选择是否30天内自动登录,若不选择则登录状态只保留到关闭浏览器前-->
+                            <input type="checkbox" style="width: 20px" id="loginStatusSave">
+                            <span class="checkable">保存登录状态,30天内无需再次登录</span>
+                        </label>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <!--                    click调用login函数-->
+                        <button @click="login" class="btn btn-info" style="width: 300px;">登录</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <!--                    跳转到注册页面-->
+                        <a href="/user/register.html">注册账号</a>
+                        <div></div>
+                        <a href="/user/findpassword.html">忘记密码</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
+    <div style="display: inline-block" class="col-3"></div>
 </div>
 <script>
-<!--    创建vue对象-->
+    <!--    创建vue对象-->
     const {createApp} = Vue
     createApp({
             data() {
@@ -99,29 +111,28 @@
                 //login登录函数
                 login: function () {
                     //ifsave是否保存登录状态30天.默认0是不保存
-                    var ifsave=0
+                    var ifsave = 0
                     //如果选中了则修改为1,保存登录状态30天,通过id loginStatusSave 选择dom然后查看其checked属性
                     if ($("#loginStatusSave").prop('checked')) {
-                        ifsave=1
+                        ifsave = 1
                     }
                     //密码长度检查,任何密码加密后应都为40位,如果不是40位说明还未加密
-                    if(this.upassword.length!=40)
-                    {
+                    if (this.upassword.length != 40) {
                         //加密
-                        this.upassword = sha1(this.upassword)
+                        saltpassword = sha1(this.upassword)
                     }
                     //通过axios发送ajax请求,发送的是post请求,携带数据username用户名,upaddword密码,ifsave是否保存登录状态
                     axios({
                         method: "POST",
                         url: "/loginServlet",
-                        data: "username=" + this.username+"&upassword="+this.upassword+"&ifsave="+ifsave
+                        data: "username=" + this.username + "&upassword=" + saltpassword + "&ifsave=" + ifsave
                     }).then(function (resp) {
                         var icontype = "error"
                         //默认显示错误图标,只有当返回的消息是登陆成功时,才显示成功图标
                         if (resp.data.msg == '登录成功') {
                             icontype = 'success'
                             //1秒后跳转到主页
-                            setTimeout("window.location.href='/index'", 1000)
+                            setTimeout("window.location.href='/index.html'", 1000)
                         }
                         //弹窗,icon图标,title显示消息内容,showconfirmbutton是否显示确认按钮,timer显示时间,时间到后自动关闭
                         Swal.fire({
@@ -130,11 +141,18 @@
                             showConfirmButton: false,
                             timer: 1500
                         })
+                    }).catch(function (error) {
+                        Swal.fire({
+                            icon: icontype,
+                            title: "登录请求发送失败,请联系站长处理",
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
                     })
                 }
             }
         }
-    //    绑定id为logindiv的div
+        //    绑定id为logindiv的div
     ).mount('#logindiv')
 </script>
 </body>

@@ -7,7 +7,9 @@
     <script src="../js/jquery-3.0.0.js"></script>
     <script src="../js/sweetalert2.all.min.js"></script>
     <script src="../js/sha1.min.js"></script>
-    <link rel="stylesheet" href="../css/picnic.css">
+    <script src="../bootstrap-5.3.0-alpha1-dist/js/bootstrap.min.js"></script>
+<!--    <link rel="stylesheet" href="../css/picnic.css">-->
+    <link rel="stylesheet" href="../bootstrap-5.3.0-alpha1-dist/css/bootstrap.min.css">
     <style>
         label{
             width: 300px;
@@ -16,29 +18,39 @@
             width: 300px;
         }
         td{
+            min-width: 86px;
             text-align: center;
             background: rgba(255,255,255,0.8);
         }
     </style>
     <title>注册</title>
 </head>
-<body style="width: 100%">
+<body>
 <div id="header"></div>
 <script>
     $("#header").load("../header.html")
 </script>
-<div class="flex center one demo">
-    <div style="width: 800px;">
+<div class="container">
+    <div class="col-sm-12 col-lg-2 col-xxl-3" style="display: inline-block;"></div>
+    <div class="col-sm-12 col-lg-8 col-xxl-6" style="display:inline-block;">
 <!--用户填写注册信息的表格-->
 <form id="register" onsubmit="return false">
     <table>
+        <tbody>
+        <tr>
+            <td></td>
+            <td>
+                注册
+            </td>
+            <td></td>
+        </tr>
         <tr>
             <td>
                 用户名:
             </td>
             <td>
 <!--                v-model双向绑定vue中的数据,输入框中的数据被修改时,-->
-                <label style="height: 50px;"><input type="text" name="username" v-model="username" id="username" placeholder="3-10个字符"></label>
+                <label><input type="text" name="username" v-model="username" id="username" placeholder="3-10个字符"></label>
             </td>
             <td>
                 <span id="tips"></span>
@@ -65,7 +77,7 @@
                 </label>
             </td>
             <td>
-                <button @click="sendemail" id="sendemailbtn">发送验证码</button>
+                <button @click="sendemail" class="btn btn-info" id="sendemailbtn">发送验证码</button>
             </td>
         </tr>
         <tr>
@@ -108,7 +120,7 @@
             <td></td>
             <td>
                 <label>
-                    <input type="checkbox" id="accept">
+                    <input type="checkbox" id="accept" style="width: 20px;">
                     <span class="checkable">同意《注册须知》</span>
                 </label>
             </td>
@@ -118,66 +130,7 @@
             <td></td>
             <td>
                 <label>
-                    <div id="captcha" style="margin: 10px"></div>
-                    <script src="https://www.recaptcha.net/recaptcha/api.js?render=explicit" async defer></script>
-                    <script>
-                        grecaptcha.enterprise.ready(function() {
-                            grecaptcha.enterprise.execute('6LcjFFElAAAAADUtXoS37jfdme4oCLoE514nIpQD', {action: 'login'}).then(function(token) {
-                            alert("通过验证")
-                            });
-                        });
-                    </script>
-                    <script>
-　　//验证码加载方法
-
-                    function handleLoadGoogleCaptcha()
-                    {
-                        this.codeFlag = false;
-                        let env = this;
-                        env.captchaId = grecaptcha.render("captcha", {
-                            //在Google reCaptcha网站获取的Site Key
-                            "sitekey": env.config.siteKey,
-                            //主题
-                            "theme": "light",
-                            //验证成功后的回调函数
-                            "callback": env.handleCaptchaCallback,
-                            //验证码超时后的回调函数
-                            "expired-callback": env.handleCaptchaExpired,
-                            //验证失败时的回调函数
-                            "error-callback": env.handleCaptchaError,
-                            //默认语言 默认是英语，简体中文写zh-CN 如果有其他需要请自行搜索
-                            "hl": this.$i18n.locale
-                        });
-                    }
-                    function handleCaptchaCallback(val)
-                    {
-                        if (val != null) {
-                            this.register.captchaCode = val;
-                            this.codeFlag = true;
-                        }
-                    }
-                    function handleCaptchaExpired()
-                    {
-                        this.register.captchaCode = "";
-                        this.codeFlag = false;
-                    }
-                    function handleCaptchaError()
-                    {
-                        this.register.captchaCode = "";
-                        //重置验证码
-                        grecaptcha.reset(this.captchaId);
-                        this.codeFlag = false;
-                    }
-                    </script>
-                </label>
-            </td>
-            <td></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td>
-                <label>
-                    <button id="regbtn" @click="register" style="width: 300px;">注册</button>
+                    <button id="regbtn" @click="register" class="btn btn-info" style="width: 300px;">注册</button>
                 </label>
             </td>
             <td></td>
@@ -187,8 +140,10 @@
             <td>
                 <a href="/user/login.html">已有账号?点此登录</a>
             </td>
-            <td></td>
+            <td>
+            </td>
         </tr>
+        </tbody>
     </table>
 </form>
 
@@ -230,7 +185,7 @@
         $("#upassword").blur(function () {
             if($("#upassword").val().length<6||$("#upassword").val().length>16){
                 $("#pwdtips").css('color','red')
-                $("#pwdtips").text('密码长度不正确,密码长度应在6-16个字符之间')
+                $("#pwdtips").text('密码长度不符合要求')
             }
             else
             {
@@ -316,7 +271,7 @@
                                             showConfirmButton: false,
                                             timer: 1500
                                         })
-                                        setTimeout("window.location.href='/user/login'", 1000)
+                                        setTimeout("window.location.href='/user/login.html'", 1000)
                                     }
                                     else {
                                         Swal.fire({

@@ -12,23 +12,28 @@
     <script src="/js/sha1.min.js"></script>
     <!--    轮播图js-->
     <script src="/js/flickity.pkgd.min.js"></script>
+    <script src="/bootstrap-5.3.0-alpha1-dist/js/bootstrap.min.js"></script>
     <!--    轮播图css-->
     <link rel="stylesheet" href="/css/flickity.css">
     <!--    轻量级css样式-->
-    <link rel="stylesheet" href="/css/picnic.css">
+    <!--    <link rel="stylesheet" href="/css/picnic.css">-->
+    <link rel="stylesheet" href="/bootstrap-5.3.0-alpha1-dist/css/bootstrap.min.css">
     <style>
-        #indexdiv{
+        #indexdiv {
             text-align: center;
         }
-        .postclassdiv{
+
+        .postclassdiv {
             border: #aaaaaa solid 1px;
         }
-        #postclassimg{
+
+        #postclassimg {
             width: 300px;
-            margin-top:10px;
+            margin-top: 10px;
         }
-        .flickity-page-dots{
-            background-color: rgba(255,255,255,0.8);
+
+        .flickity-page-dots {
+            background-color: rgba(255, 255, 255, 0.8);
             /*圆角边框5px*/
             border-radius: 5px;
         }
@@ -43,10 +48,10 @@
         $("#header").load("../header.html")
     })
 </script>
-<div style="width: 1190px;margin: 0 auto" id="indexdiv">
-    <div style="width: 832px;display: inline-block;height: 250px;margin: 10px;margin-bottom: 45px">
+<div class="container" style="margin: 0 auto;max-width: 1140px" id="indexdiv">
+    <div class="col-xs-12 col-sm-12 col-xl-8" style="display: inline-block;height: 250px;margin: 10px;margin-bottom: 45px;max-width: 836px;z-index: 5">
         <div class="gallery js-flickity" data-flickity-options='{ "wrapAround": true, "autoPlay": 2000 }'>
-<!--            轮播图的图片-->
+            <!--            轮播图的图片-->
             <div class="gallery-cell">
                 <img src="/resource/img/indexlunboimg/1.jpg">
             </div>
@@ -64,40 +69,43 @@
             </div>
         </div>
     </div>
-<!--    display:inline-block是把div当成行内元素-->
-    <div style="min-height: 250px;margin-top:10px;background-color:rgba(255,255,255,0.8);display: inline-block;float: right;width: 300px;margin-left: 10px;text-align: left;">
+    <!--    display:inline-block是把div当成行内元素-->
+    <div class="col-xs-12 col-sm-12 col-xl-3"
+         style="min-height: 250px;margin-top:10px;background-color:rgba(255,255,255,0.8);display: inline-block;float: right;margin-left: 10px;text-align: left;">
         <div style="margin: 10px">
             <p>这里适合放个广告</p>
         </div>
     </div>
-    <div style="width: 880px;display: inline-block;">
-<div class="flex two">
-<!--    vue使用v-for循环输出版区-->
-    <div v-for="u in user">
-        <div style="background-color:rgba(255,255,255,0.8);">
-<!--            :是v-bind:的缩写,调用vue中的数据-->
-        <a :href="'/PostClass/'+u.englishname+'?page=1'" style="color: black;">
-        <div class="postclassdiv">
-        <div>
-            <img :src="'/resource/img/PostClass/'+u.pcid+'.jpg'" id="postclassimg">
-        </div>
-<!--            {{}}调用vue中的数据-->
-        {{u.pcname}}
-        </div>
-        </a>
+    <div class="col-xs-12 col-sm-12 col-xl-8" style="display:inline-block;margin-top: 10px">
+        <div class="col-xs-12 col-sm-12 col-sm-12 col-xl-12">
+            <!--    vue使用v-for循环输出版区-->
+            <div v-for="u in user" class="col-xs-12 col-sm-12 col-md-6" style="display:inline-block;margin-bottom: 10px;padding-right:10px;min-width: 350px">
+                <div style="background-color:rgba(255,255,255,0.8);">
+                    <!--            :是v-bind:的缩写,调用vue中的数据-->
+                    <a :href="'/PostClass/'+u.englishname+'?page=1'" style="color: black;">
+                        <div class="postclassdiv">
+                            <div>
+                                <img :src="'/resource/img/PostClass/'+u.pcid+'.jpg'" id="postclassimg" style="width: 300px;height: 95px">
+                            </div>
+                            <!--            {{}}调用vue中的数据-->
+                            {{u.pcname}}
+                        </div>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
-</div>
-    </div>
-    <div style="min-height: 300px;background-color:rgba(255,255,255,0.8);display: inline-block;float: right;width: 300px;margin-left: 10px;text-align: left;">
+    <div class="col-xs-12 col-sm-12 col-xl-3"
+         style="min-height: 300px;background-color:rgba(255,255,255,0.8);float: right;margin-left: 10px;text-align: left;">
         <div style="margin: 10px">
-        <p>1.请不要发无意义帖子</p>
-        <p>2.勿发广告</p>
-        <p>3.请勿对他人进行辱骂或人身攻击等,文明交流</p>
-        <p>4.遇到违规帖子请举报,管理员会进行处理</p>
-        <p>5.如果对网站有任何建议请联系站长</p>
-        <p>6.发帖请遵守国家法律法规,禁止发违法内容</p>
+            <p>1.请不要发无意义帖子</p>
+            <p>2.勿发广告</p>
+            <p>3.请勿对他人进行辱骂或人身攻击等,文明交流</p>
+            <p>4.遇到违规帖子请举报,管理员会进行处理</p>
+            <p>5.如果对网站有任何建议请联系站长</p>
+            <p>6.发帖请遵守国家法律法规,禁止发违法内容</p>
         </div>
+
     </div>
 </div>
 <script>
@@ -118,10 +126,10 @@
             }).then(function (resp) {
                 // 返回的数据加载到vue上
                 _this.user = resp.data
-                _this.user.pcid = "/resource/img/PostClass"+resp.data.pcid
+                _this.user.pcid = "/resource/img/PostClass" + resp.data.pcid
             })
         }
-    //    挂载到id为indexdiv 的div上
+        //    挂载到id为indexdiv 的div上
     }).mount('#indexdiv')
     //轮播图设置
     $('#galleryjs').flickity({
